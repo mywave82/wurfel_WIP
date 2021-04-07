@@ -166,7 +166,7 @@ void wurfel_dice::render (float const *proj, float const *view, float const *lig
 	glUniformMatrix4fv(dice_uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 	{
-		float ambient[3] = {0.2f, 0.2f, 0.2f};
+		float ambient[3] = {0.2f, 0.3f, 0.3f};
 		//float lightPos[3] = {5.0f, 5.0f, 5.0f};
 		float lightColor[3] = {0.6f, 1.0f, 1.0f};
 

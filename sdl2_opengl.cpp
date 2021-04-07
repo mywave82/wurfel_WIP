@@ -13,6 +13,7 @@
 
 #include "cubic.hh"
 #include "dice.hh"
+#include "lightstar.hh"
 
 const static float vertices[] =
 {
@@ -218,6 +219,7 @@ int main(int argc, char *argv[])
 
 	wurfel_cubic *cubic = new wurfel_cubic();
 	wurfel_dice *dice = new wurfel_dice();
+	wurfel_lightstar *lightstar = new wurfel_lightstar();
 
 	auto t_start = std::chrono::high_resolution_clock::now();
 
@@ -301,16 +303,21 @@ int main(int argc, char *argv[])
 		float timeCamHeight = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 10000000000ll).count(); /* resolution is ten second */
 		float CamHeight = glm::radians(timeCamHeight * 36.0); /* 10 seconds * 36.0 = 360 degrees */
 
-		float timeLightRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 2500000000ll).count(); /* resolution is two and a half second */
-		float LightRotation = glm::radians(timeLightRotation * 144.0); /* 2.5 seconds * 144.0 = 360 degrees */
+		float timeLightRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 8000000000ll).count(); /* resolution is eight second */
+		float LightRotation = glm::radians(timeLightRotation * 45.0); /* 8 seconds * 45.0 = 360 degrees */
 
 		float timeCubeRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 6000000000ll).count(); /* resolution is six second */
 
 #if 1
+		float camera[3] =
+		{
+			sinf(CamRotation)*(sinf(CamHeight + M_PI) * 2.0f + 2.5f),
+			cosf(CamRotation)*(sinf(CamHeight + M_PI) * 2.0f + 2.5f),
+			sinf(CamHeight) * 2.0f + 2.5f
+		};
+
 		glm::mat4 view = glm::lookAt(
-		    glm::vec3(sin(CamRotation)*(sin(CamHeight + M_PI) * 2.0f + 2.5f),
-		              cos(CamRotation)*(sin(CamHeight + M_PI) * 2.0f + 2.5f),
-		              sin(CamHeight) * 2.0f + 2.5f),
+		    glm::vec3(camera[0], camera[1], camera[2]),
 		    glm::vec3(0.0f, 0.0f, 0.5f),
 		    glm::vec3(0.0f, 0.0f, 1.0f)
 		);
@@ -328,11 +335,12 @@ int main(int argc, char *argv[])
 		floor_render (glm::value_ptr(proj), glm::value_ptr(view));
 		{
 			float light1[3];
-			light1[0] = sin(LightRotation*2.0f)*3.0f;
-			light1[1] = cos(LightRotation*2.0f)*3.0f;
-			light1[2] = 2.0f;
+			light1[0] = sin(LightRotation*2.0f)*1.8f;
+			light1[1] = cos(LightRotation*2.0f)*1.8f;
+			light1[2] = 1.0f;
 			cubic->render (glm::value_ptr(proj), glm::value_ptr(view), light1);
 			dice->render (glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
+			lightstar->render (glm::value_ptr(proj), glm::value_ptr(view), light1, camera);
 		}
 
 #if 0
@@ -372,6 +380,7 @@ glDisable(GL_STENCIL_TEST);
 
 	delete cubic; cubic = 0;
 	delete dice; dice = 0;
+	delete lightstar; lightstar = 0;
 	floor_cleanup ();
 
 #if 0
