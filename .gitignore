@@ -1,0 +1,11 @@
+*.o
+sdl2_opengl
+cubic-frag.cpp
+cubic-geom.cpp
+cubic-vert.cpp
+dice-frag.cpp
+dice-geom.cpp
+dice-vert.cpp
+lightstar-frag.cpp
+lightstar-geom.cpp
+lightstar-vert.cpp
