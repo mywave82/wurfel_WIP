@@ -495,7 +495,7 @@ void generate_normals (const int count, const int elements_count)
 
 				glm::vec3 e1 = p0 - p1;
 				glm::vec3 e2 = p2 - p1;
-				norm += glm::cross(e1, e2);
+				norm -= glm::cross(e1, e2);
 			}
 		}
 		assert (norm != glm::vec3(0.0f));
