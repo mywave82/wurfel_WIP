@@ -18,7 +18,7 @@ class wurfel_dice
 		wurfel_dice (void);
 		~wurfel_dice (void);
 
-		void render (float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/);
+		void render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/);
 
 	private:
 		static const struct vertix_t vertices[1569];

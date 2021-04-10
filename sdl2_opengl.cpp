@@ -331,22 +331,17 @@ int main(int argc, char *argv[])
 
 		glm::mat4 proj = glm::perspectiveFov(glm::radians(45.0f), (float)windowWidth, (float)windowHeight, 0.2f, 20.0f);
 
-		floor_render (glm::value_ptr(proj), glm::value_ptr(view));
-		{
-			float light1[3];
-#if 0
-		LightRotation = 0.55f;
-#endif
+		float light1[3];
+		light1[0] = sin(LightRotation*2.0f)*2.4f;
+		light1[1] = cos(LightRotation*2.0f)*2.4f;
+		light1[2] = 1.0f;
 
-			light1[0] = sin(LightRotation*2.0f)*1.8f;
-			light1[1] = cos(LightRotation*2.0f)*1.8f;
-			light1[2] = 1.0f;
-			cubic->render (glm::value_ptr(proj), glm::value_ptr(view), light1);
-			dice->render (glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
-			lightstar->render (glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
-		}
+		float light2[3];
+		light2[0] = 0.0f;
+		light2[1] = 0.0f;
+		light2[2] = 0.5f;
 
-#if 0
+#if 1
 
 
 glEnable(GL_STENCIL_TEST);
@@ -355,29 +350,50 @@ glEnable(GL_STENCIL_TEST);
     glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glStencilMask(0xFF); // Write to stencil buffer
-    glDepthMask(GL_FALSE); // Don't write to depth buffer
+
+//	glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+//    glDepthMask(GL_FALSE); // Don't write to depth buffer
     glClear(GL_STENCIL_BUFFER_BIT); // Clear stencil buffer (0 by default)
 
-    glDrawArrays(GL_TRIANGLES, 36, 6);
+		floor_render (true, glm::value_ptr(proj), glm::value_ptr(view));
+
+  //  glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 
     // Draw cube reflection
     glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
     glStencilMask(0x00); // Don't write anything to stencil buffer
-    glDepthMask(GL_TRUE); // Write to depth buffer
+//    glDepthMask(GL_TRUE); // Write to depth buffer
 
+#if 0
     model = glm::scale(
         glm::translate(model, glm::vec3(0, 0, -1)),
         glm::vec3(1, 1, -1)
     );
     glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+#endif
 
-		glUniform3f(uniColor, 0.3f, 0.3f, 0.3f);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-		glUniform3f(uniColor, 1.0f, 1.0f, 1.0f);
+		cubic->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, light2);
+		dice->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
+		lightstar->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
+
+//		glUniform3f(uniColor, 0.3f, 0.3f, 0.3f);
+  //  glDrawArrays(GL_TRIANGLES, 0, 36);
+//		glUniform3f(uniColor, 1.0f, 1.0f, 1.0f);
 
 glDisable(GL_STENCIL_TEST);
+//glClear(GL_DEPTH_BUFFER_BIT);
 
 #endif
+
+		floor_render (false, glm::value_ptr(proj), glm::value_ptr(view));
+
+		cubic->render (false, glm::value_ptr(proj), glm::value_ptr(view), light1, light2);
+		dice->render (false, glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
+		lightstar->render (false, glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
+
 		SDL_GL_SwapWindow(window);
 	}
 

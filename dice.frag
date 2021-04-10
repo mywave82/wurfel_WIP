@@ -148,8 +148,6 @@ void main()
 	vec3 diffuse = diff * lightColor;
 	vec3 result = (ambient + diffuse) * background;
 
-	//result = normalize(lightPos - _WorldPosition);
-
 	outColor = vec4(max(result.r, highlights.r),
 	                max(result.g, highlights.g),
 	                max(result.b, highlights.b), 1.0);

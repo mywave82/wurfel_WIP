@@ -13,5 +13,5 @@ void main()
 {
 	TexturePosition = (matrix * vec4(position.xyz, 1.0)).xyz;
 	gl_Position = model * vec4(position, 1.0);
-	_vertexNormal = (model * vec4(vertexNormal, 1.0)).xyz;
+	_vertexNormal = normalize(mat3(model) * vertexNormal);
 }

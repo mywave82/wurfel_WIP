@@ -91,7 +91,7 @@ wurfel_dice::wurfel_dice (void)
 	uniform_lightColor = glGetUniformLocation (dice_shaderProgram, "lightColor");
 }
 
-void wurfel_dice::render (float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/)
+void wurfel_dice::render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/)
 {
 	glBindVertexArray (dice_vao);
 	glBindBuffer (GL_ARRAY_BUFFER, dice_vbo);
@@ -129,11 +129,21 @@ void wurfel_dice::render (float const *proj, float const *view, float const *lig
 	glUniformMatrix4fv(dice_uniView, 1, GL_FALSE, view);
 
 	glm::mat4 model = glm::mat4(1.0f);
+
+	if (mirror == true)
+	{
+	    model = glm::scale(
+		model,
+		glm::vec3(1.0, 1.0, -1.0)
+	    );
+	}
+
 	// lift the dice up from the floor (diagonal of a dice is sqrt(3 * sideLength))
 	model = glm::translate ( model, glm::vec3(0.0f, 0.0f, sqrt(3.0f)/2));
 	// spin with time
 	model = glm::rotate    ( model, (float)(spin * 2.0f * M_PI), glm::vec3(0.0f, 0.0f, 1.0f));
 	// rotate the dice, to be at its tip
+
 	model = glm::rotate    ( model, atanf(sqrtf(2.0f)) /*glm::radians(54.74f)*/, glm::vec3(0.5, 0.5, 0.0)); //glm::vec3(sqrtf(2.0f), sqrtf(2.0f), 0.0f));
 
 #if 0
@@ -168,14 +178,22 @@ void wurfel_dice::render (float const *proj, float const *view, float const *lig
 	{
 		float ambient[3] = {0.2f, 0.3f, 0.3f};
 		//float lightPos[3] = {5.0f, 5.0f, 5.0f};
-		float lightColor[3] = {0.6f, 1.0f, 1.0f};
+		float lightColor[3] = {0.6f, 0.9f, 0.9f};
 
 		glUniform3fv (uniform_ambient,    1, ambient);
 		glUniform3fv (uniform_lightPos,   1, /*lightPos*/ light1);
 		glUniform3fv (uniform_lightColor, 1, lightColor);
 	}		
 
+	if (mirror == true)
+	{
+		glFrontFace (GL_CW);
+	}
 	glDrawElements (GL_TRIANGLES, sizeof (elements)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+	if (mirror == true)
+	{
+		glFrontFace (GL_CCW);
+	}
 }
 
 wurfel_dice::~wurfel_dice (void)

@@ -23,8 +23,8 @@ void main()
 	for(int i = 0; i < gl_in.length(); i++)
 	{
 		gl_Position = proj * view * gl_in[i].gl_Position;
+		_WorldPosition =            gl_in[i].gl_Position.xyz;
 		Position = TexturePosition[i];
-		_WorldPosition = gl_in[i].gl_Position.xyz;
 		Normal = _vertexNormal[i];
 		EmitVertex();
 	}

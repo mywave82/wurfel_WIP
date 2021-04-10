@@ -38,8 +38,16 @@ const char *floor_fragmentSource = R"glsl(
 	uniform vec3 AvgColor;
 	uniform float Frequency;
 
+	uniform int Mode;
+
 	void main()
 	{
+		if (Mode == 0)
+		{
+			outColor = vec4(0.0, 0.0, 0.0, 1.0);
+			return;
+		}
+
 		vec3 color;
 		vec2 fw = fwidth (Position.xy);
 		vec2 fuzz = fw * Frequency * 2.0f;
@@ -54,7 +62,7 @@ const char *floor_fragmentSource = R"glsl(
 
 			color = mix(color, AvgColor, smoothstep (0.125, 0.5, fuzzMax));
 
-			outColor = vec4 (color, 1.0);
+			outColor = vec4 (color, 0.2);
 		//} else {
 		//	outColor = vec4(AvgColor, 1.0);
 		}
@@ -68,6 +76,7 @@ GLint floor_posAttrib;
 GLint floor_uniModel;
 GLint floor_uniView;
 GLint floor_uniProj;
+GLint floor_uniMode;
 
 static void floor_init (void)
 {
@@ -120,9 +129,10 @@ static void floor_init (void)
 	floor_uniModel = glGetUniformLocation (floor_shaderProgram, "model"); /* model location in the world */
 	floor_uniView  = glGetUniformLocation (floor_shaderProgram, "view");   /* camera angle + position */
 	floor_uniProj  = glGetUniformLocation (floor_shaderProgram, "proj");   /* project perspective */
+	floor_uniMode = glGetUniformLocation (floor_shaderProgram, "Mode");
 }
 
-static void floor_render (float const *proj, float const *view)
+static void floor_render (bool mirror, float const *proj, float const *view)
 {
 	glBindVertexArray (floor_vao);
 	glBindBuffer (GL_ARRAY_BUFFER, floor_vbo);
@@ -130,9 +140,9 @@ static void floor_render (float const *proj, float const *view)
 
 	glUseProgram (floor_shaderProgram);
 
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color1"),     0.000f, 0.000f, 1.00f);
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color2"),     0.050f, 0.050f, 0.05f);
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "AvgColor"),   0.025f, 0.025f, 0.50f);
+	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color1"),     0.000f, 0.000f, 0.800f);
+	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color2"),     0.600f, 0.600f, 0.600f);
+	glUniform3f (glGetUniformLocation (floor_shaderProgram, "AvgColor"),   0.400f, 0.400f, 0.500f);
 	glUniform1f (glGetUniformLocation (floor_shaderProgram, "Frequency"),  8.0f);
 
 
@@ -141,8 +151,7 @@ static void floor_render (float const *proj, float const *view)
 
 	glUniformMatrix4fv(floor_uniProj, 1, GL_FALSE, proj);
 	glUniformMatrix4fv(floor_uniView, 1, GL_FALSE, view);
-
-
+	glUniform1i (floor_uniMode, mirror == false ? 1 : 0);
 
 	glm::mat4 model = glm::mat4(1.0f);
 #if 0
@@ -184,7 +193,19 @@ static void floor_render (float const *proj, float const *view)
 
 	glUniformMatrix4fv(floor_uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
+	if (mirror == false)
+	{
+		glEnable (GL_BLEND);
+
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+	}
 	glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	if (mirror == false)
+	{
+		glDisable (GL_BLEND);
+	}
 }
 
 static void floor_cleanup (void)

@@ -5,8 +5,10 @@ in vec3 Normal;
 out vec4 outColor;
 
 uniform vec3 ambient;
-uniform vec3 lightPos;
-uniform vec3 lightColor;
+uniform vec3 light1Pos;
+uniform vec3 light2Pos;
+uniform vec3 light1Color;
+uniform vec3 light2Color;
 
 // Classic Perlin 3D Noise
 // by Stefan Gustavson
@@ -141,10 +143,15 @@ void main()
 		min(highlights.g, input0),
 		min(highlights.b, input0));
 
-	vec3 lightDir = normalize(lightPos - _WorldPosition);
-	float diff = max(dot(Normal, lightDir)*2.0, 0.0);
-	vec3 diffuse = diff * lightColor;
-	vec3 result = (ambient + diffuse) * background;
+	vec3 light1Dir = normalize(light1Pos - _WorldPosition);
+	float diff1 = max(dot(Normal, light1Dir), 0.0);
+	vec3 diffuse1 = diff1 * light1Color;
+
+	vec3 light2Dir = normalize(light2Pos - _WorldPosition);
+	float diff2 = max(dot(Normal, light2Dir), 0.0);
+	vec3 diffuse2 = diff2 * light2Color;
+
+	vec3 result = (ambient + diffuse1 + diffuse2) * background;
 
 	outColor = vec4(result, 1.0);
 }

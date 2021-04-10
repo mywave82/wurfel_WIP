@@ -145,11 +145,13 @@ wurfel_cubic::wurfel_cubic (void)
 	cubic_matrix  = glGetUniformLocation (cubic_shaderProgram, "matrix");   /* project perspective */
 
 	uniform_ambient    = glGetUniformLocation (cubic_shaderProgram, "ambient");
-	uniform_lightPos   = glGetUniformLocation (cubic_shaderProgram, "lightPos");
-	uniform_lightColor = glGetUniformLocation (cubic_shaderProgram, "lightColor");
+	uniform_light1Pos   = glGetUniformLocation (cubic_shaderProgram, "light1Pos");
+	uniform_light2Pos   = glGetUniformLocation (cubic_shaderProgram, "light2Pos");
+	uniform_light1Color = glGetUniformLocation (cubic_shaderProgram, "light1Color");
+	uniform_light2Color = glGetUniformLocation (cubic_shaderProgram, "light2Color");
 }
 
-void wurfel_cubic::render (float const *proj, float const *view, float const *light1)
+void wurfel_cubic::render (bool mirror, float const *proj, float const *view, float const *light1, float const *light2)
 {
 	glBindVertexArray (cubic_vao);
 	glUseProgram (cubic_shaderProgram);
@@ -157,11 +159,14 @@ void wurfel_cubic::render (float const *proj, float const *view, float const *li
 	{
 		float ambient[3] = {0.2f, 0.2f, 0.2f};
 		//float lightPos[3] = {5.0f, 5.0f, 5.0f};
-		float lightColor[3] = {0.6f, 1.0f, 1.0f};
+		float light1Color[3] = {0.6f, 1.0f, 1.0f};
+		float light2Color[3] = {2.0f, 0.0f, 0.0f};
 
 		glUniform3fv (uniform_ambient,    1, ambient);
-		glUniform3fv (uniform_lightPos,   1, /*lightPos*/ light1);
-		glUniform3fv (uniform_lightColor, 1, lightColor);
+		glUniform3fv (uniform_light1Pos,   1, light1);
+		glUniform3fv (uniform_light2Pos,   1, light2);
+		glUniform3fv (uniform_light1Color, 1, light1Color);
+		glUniform3fv (uniform_light2Color, 1, light2Color);
 
 		glUniformMatrix4fv(cubic_uniProj, 1, GL_FALSE, proj);
 		glUniformMatrix4fv(cubic_uniView, 1, GL_FALSE, view);
@@ -201,6 +206,14 @@ void wurfel_cubic::render (float const *proj, float const *view, float const *li
 
 
 		glm::mat4 model = glm::mat4(1.0f);
+
+		if (mirror == true)
+		{
+		    model = glm::scale(
+			model,
+			glm::vec3(1.0, 1.0, -1.0)
+		    );
+		}
 
 		/* place in front of cube */
 		model = glm::translate (model, glm::vec3(0.0f, -1.0f, 0.0f));
@@ -244,7 +257,13 @@ void wurfel_cubic::render (float const *proj, float const *view, float const *li
 		proj[0*4+3], proj[1*4+3], proj[2*4+3], proj[3*4+3]);
 #endif
 
+
 		glUniformMatrix4fv(cubic_uniModel, 1, GL_FALSE, glm::value_ptr(model));
+
+		if (mirror == true)
+		{
+			glFrontFace (GL_CW);
+		}
 
 		switch (letter)
 		{
@@ -256,6 +275,11 @@ void wurfel_cubic::render (float const *proj, float const *view, float const *li
 				glDrawElements (GL_TRIANGLES, sizeof (elements_B)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
 			case 3:
 				glDrawElements (GL_TRIANGLES, sizeof (elements_I)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
+		}
+
+		if (mirror == true)
+		{
+			glFrontFace (GL_CCW);
 		}
 	}
 }

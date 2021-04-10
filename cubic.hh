@@ -18,7 +18,7 @@ class wurfel_cubic
 		wurfel_cubic (void);
 		~wurfel_cubic (void);
 
-		void render (float const *proj, float const *view, float const *light1);
+		void render (bool mirror, float const *proj, float const *view, float const *light1, float const *light2);
 
 	private:
 #define HEADER
@@ -39,6 +39,8 @@ class wurfel_cubic
 		GLint cubic_matrix;
 		GLint attrib_vertexNormal;    /* per vertex */
 		GLint uniform_ambient;
-		GLint uniform_lightPos;
-		GLint uniform_lightColor;
+		GLint uniform_light1Pos;
+		GLint uniform_light2Pos;
+		GLint uniform_light1Color;
+		GLint uniform_light2Color;
 };

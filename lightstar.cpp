@@ -99,7 +99,7 @@ wurfel_lightstar::wurfel_lightstar (void)
 	//uniMatrix  = glGetUniformLocation (lightstar_shaderProgram, "matrix");   /* project perspective */
 }
 
-void wurfel_lightstar::render (float const *proj, float const *view, float const *light1, float const *camera, float Clock)
+void wurfel_lightstar::render (bool mirror, float const *proj, float const *view, float const *light1, float const *camera, float Clock)
 {
 	glBindVertexArray (vao);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
@@ -136,6 +136,15 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 	);
 #else
 	glm::mat4 model = glm::mat4(1.0f);
+
+	if (mirror == true)
+	{
+	    model = glm::scale(
+		model,
+		glm::vec3(1.0, 1.0, -1.0)
+	    );
+	}
+
 	model = glm::translate (model, glm::vec3(light1[0], light1[1], light1[2]));
 	model[0][0] = view[ 0];
 	model[1][0] = view[ 1];
@@ -161,8 +170,12 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 		model[3][0], model[3][1], model[3][2], model[3][3]);
 #endif
 
-
 	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+
+	if (mirror == true)
+	{
+//		glFrontFace (GL_CW);
+	}
 
 	glEnable (GL_BLEND);
 
@@ -170,6 +183,11 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 	glDrawElements (GL_TRIANGLES, sizeof (elements)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
 	glDisable (GL_BLEND);
+
+	if (mirror == true)
+	{
+//		glFrontFace (GL_CCW);
+	}
 }
 
 wurfel_lightstar::~wurfel_lightstar (void)
