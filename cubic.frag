@@ -142,7 +142,7 @@ void main()
 		min(highlights.b, input0));
 
 	vec3 lightDir = normalize(lightPos - _WorldPosition);
-	float diff = max(dot(Normal, lightDir), 0.0);
+	float diff = max(dot(Normal, lightDir)*2.0, 0.0);
 	vec3 diffuse = diff * lightColor;
 	vec3 result = (ambient + diffuse) * background;
 

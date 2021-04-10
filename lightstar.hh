@@ -14,7 +14,7 @@ class wurfel_lightstar
 		wurfel_lightstar (void);
 		~wurfel_lightstar (void);
 
-		void render (float const *proj, float const *view, float const *light1, float const *camera);
+		void render (float const *proj, float const *view, float const *light1, float const *camera, float Clock);
 
 	private:
 		static const struct vertix_t vertices[4];
@@ -28,5 +28,6 @@ class wurfel_lightstar
 		GLint uniModel;
 		GLint uniView;
 		GLint uniProj;
+		GLint uniClock;
 		//GLint uniMatrix;
 };

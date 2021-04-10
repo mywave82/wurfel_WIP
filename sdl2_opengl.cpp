@@ -283,13 +283,13 @@ int main(int argc, char *argv[])
 							break;
 					}
 //					printf ("scale=%f rotate={%f %f %f} translate={%f %f %f}\n", scale, rotx, roty, rotz, trax, tray, traz);
-					printf ("scale=%f translate={%f %f %f}\n", scale, trax, tray, traz);
+//					printf ("scale=%f translate={%f %f %f}\n", scale, trax, tray, traz);
 					break;
 			}
 		}
 
 		// Clear the screen to black
-		glClearColor (0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Calculate transformation
@@ -306,14 +306,21 @@ int main(int argc, char *argv[])
 		float timeLightRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 8000000000ll).count(); /* resolution is eight second */
 		float LightRotation = glm::radians(timeLightRotation * 45.0); /* 8 seconds * 45.0 = 360 degrees */
 
+		float timeClockRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 60000000000ll).count(); /* resolution is sixty second */
+
 		float timeCubeRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 6000000000ll).count(); /* resolution is six second */
 
-#if 1
 		float camera[3] =
 		{
-			sinf(CamRotation)*(sinf(CamHeight + M_PI) * 2.0f + 2.5f),
-			cosf(CamRotation)*(sinf(CamHeight + M_PI) * 2.0f + 2.5f),
-			sinf(CamHeight) * 2.0f + 2.5f
+#if 0
+			sinf(rotx * M_PI / 180.0f) * roty,
+			cosf(rotx * M_PI / 180.0f) * roty,
+			rotz,
+#else
+			sinf(CamRotation)*(sinf(CamHeight + M_PI) * 0.5f + 3.5f),
+			cosf(CamRotation)*(sinf(CamHeight + M_PI) * 0.5f + 3.5f),
+			sinf(CamHeight) * 1.0f + 1.3f
+#endif
 		};
 
 		glm::mat4 view = glm::lookAt(
@@ -321,26 +328,22 @@ int main(int argc, char *argv[])
 		    glm::vec3(0.0f, 0.0f, 0.5f),
 		    glm::vec3(0.0f, 0.0f, 1.0f)
 		);
-#else
-		glm::mat4 view = glm::lookAt(
-		    glm::vec3(sinf(rotx * M_PI / 180.0f) * roty,
-		              cosf(rotx * M_PI / 180.0f) * roty,
-		              rotz),
-		    glm::vec3(0.0f, 0.0f, 0.5f),
-		    glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-#endif
+
 		glm::mat4 proj = glm::perspectiveFov(glm::radians(45.0f), (float)windowWidth, (float)windowHeight, 0.2f, 20.0f);
 
 		floor_render (glm::value_ptr(proj), glm::value_ptr(view));
 		{
 			float light1[3];
+#if 0
+		LightRotation = 0.55f;
+#endif
+
 			light1[0] = sin(LightRotation*2.0f)*1.8f;
 			light1[1] = cos(LightRotation*2.0f)*1.8f;
 			light1[2] = 1.0f;
 			cubic->render (glm::value_ptr(proj), glm::value_ptr(view), light1);
 			dice->render (glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
-			lightstar->render (glm::value_ptr(proj), glm::value_ptr(view), light1, camera);
+			lightstar->render (glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
 		}
 
 #if 0

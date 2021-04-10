@@ -95,10 +95,11 @@ wurfel_lightstar::wurfel_lightstar (void)
 	uniModel = glGetUniformLocation (shaderProgram, "model"); /* model location in the world */
 	uniView  = glGetUniformLocation (shaderProgram, "view");   /* camera angle + position */
 	uniProj  = glGetUniformLocation (shaderProgram, "proj");   /* project perspective */
+	uniClock = glGetUniformLocation (shaderProgram, "Clock");
 	//uniMatrix  = glGetUniformLocation (lightstar_shaderProgram, "matrix");   /* project perspective */
 }
 
-void wurfel_lightstar::render (float const *proj, float const *view, float const *light1, float const *camera)
+void wurfel_lightstar::render (float const *proj, float const *view, float const *light1, float const *camera, float Clock)
 {
 	glBindVertexArray (vao);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
@@ -118,10 +119,13 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj);
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, view);
+	glUniform1f (uniClock, Clock);
 
+#if 0
 	fprintf (stderr, "camera: %4f %4f %4f   light: %4f %4f %4f\n",
 		camera[0], camera[1], camera[2],
 		light1[0], light1[1], light1[2]);
+#endif
 
 #if 0
 	glm::mat4 model = glm::lookAt
@@ -145,6 +149,7 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 	model = glm::scale (model, glm::vec3(0.1f, 0.1f, 0.1f));
 #endif
 
+#if 0
 	fprintf (stderr,
 		"%4f %4f %4f %4f\n"
 		"%4f %4f %4f %4f\n"
@@ -154,12 +159,17 @@ void wurfel_lightstar::render (float const *proj, float const *view, float const
 		model[1][0], model[1][1], model[1][2], model[1][3],
 		model[2][0], model[2][1], model[2][2], model[2][3],
 		model[3][0], model[3][1], model[3][2], model[3][3]);
-
+#endif
 
 
 	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
+	glEnable (GL_BLEND);
+
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawElements (GL_TRIANGLES, sizeof (elements)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+	glDisable (GL_BLEND);
 }
 
 wurfel_lightstar::~wurfel_lightstar (void)
