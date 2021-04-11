@@ -21,15 +21,15 @@
 
 wurfel_dice::wurfel_dice (void)
 {
-	glGenVertexArrays (1, &dice_vao);
-	glBindVertexArray (dice_vao);
+	glGenVertexArrays (1, &vao);
+	glBindVertexArray (vao);
 
-	glGenBuffers (1, &dice_vbo);
-	glBindBuffer (GL_ARRAY_BUFFER, dice_vbo);
+	glGenBuffers (1, &vbo);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glGenBuffers (1, &dice_ebo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, dice_ebo);
+	glGenBuffers (1, &ebo);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 	GLuint vertexShader = glCreateShader (GL_VERTEX_SHADER);
@@ -66,38 +66,38 @@ wurfel_dice::wurfel_dice (void)
 		printf ("Failed to compile dice_fragmentSource:\n%s\n", buffer);
 	}
 
-	dice_shaderProgram = glCreateProgram ();
-	glAttachShader (dice_shaderProgram, vertexShader);
-	glAttachShader (dice_shaderProgram, geometryShader);
-	glAttachShader (dice_shaderProgram, fragmentShader);
+	shaderProgram = glCreateProgram ();
+	glAttachShader (shaderProgram, vertexShader);
+	glAttachShader (shaderProgram, geometryShader);
+	glAttachShader (shaderProgram, fragmentShader);
 
-	glBindFragDataLocation(dice_shaderProgram, 0, "outColor");
-	glLinkProgram (dice_shaderProgram);
+	glBindFragDataLocation(shaderProgram, 0, "outColor");
+	glLinkProgram (shaderProgram);
 	glDeleteShader (vertexShader); // The finished program is not affected by this
 	glDeleteShader (geometryShader);
 	glDeleteShader (fragmentShader);
 
-	glUseProgram (dice_shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
+	glUseProgram (shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
 
-	attrib_position = glGetAttribLocation (dice_shaderProgram, "position"); /* local position inside the model */
-	attrib_vertexNormal    = glGetAttribLocation (dice_shaderProgram,    "vertexNormal");
-	dice_uniModel = glGetUniformLocation (dice_shaderProgram, "model"); /* model location in the world */
-	dice_uniView  = glGetUniformLocation (dice_shaderProgram, "view");   /* camera angle + position */
-	dice_uniProj  = glGetUniformLocation (dice_shaderProgram, "proj");   /* project perspective */
-	dice_matrix  = glGetUniformLocation (dice_shaderProgram, "matrix");   /* project perspective */
+	attrib_position = glGetAttribLocation (shaderProgram, "position"); /* local position inside the model */
+	attrib_vertexNormal    = glGetAttribLocation (shaderProgram,    "vertexNormal");
+	uniModel = glGetUniformLocation (shaderProgram, "model"); /* model location in the world */
+	uniView  = glGetUniformLocation (shaderProgram, "view");   /* camera angle + position */
+	uniProj  = glGetUniformLocation (shaderProgram, "proj");   /* project perspective */
+	uniMatrix  = glGetUniformLocation (shaderProgram, "matrix");   /* project perspective */
 
-	uniform_ambient    = glGetUniformLocation (dice_shaderProgram, "ambient");
-	uniform_lightPos   = glGetUniformLocation (dice_shaderProgram, "lightPos");
-	uniform_lightColor = glGetUniformLocation (dice_shaderProgram, "lightColor");
+	uniform_ambient    = glGetUniformLocation (shaderProgram, "ambient");
+	uniform_lightPos   = glGetUniformLocation (shaderProgram, "lightPos");
+	uniform_lightColor = glGetUniformLocation (shaderProgram, "lightColor");
 }
 
 void wurfel_dice::render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/)
 {
-	glBindVertexArray (dice_vao);
-	glBindBuffer (GL_ARRAY_BUFFER, dice_vbo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, dice_ebo);
+	glBindVertexArray (vao);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-	glUseProgram (dice_shaderProgram);
+	glUseProgram (shaderProgram);
 	
 	glEnableVertexAttribArray (attrib_position);
 	glVertexAttribPointer (
@@ -123,10 +123,10 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 	glm::mat4 matrix = glm::mat4(1.0f);
 	//matrix = glm::scale (matrix, glm::vec3(scale, scale, scale));
 	//matrix = glm::translate (matrix, glm::vec3(trax, tray, traz));
-	glUniformMatrix4fv(dice_matrix, 1, GL_FALSE, glm::value_ptr(matrix));
+	glUniformMatrix4fv(uniMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-	glUniformMatrix4fv(dice_uniProj, 1, GL_FALSE, proj);
-	glUniformMatrix4fv(dice_uniView, 1, GL_FALSE, view);
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj);
+	glUniformMatrix4fv(uniView, 1, GL_FALSE, view);
 
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -173,7 +173,7 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 		proj[0*4+3], proj[1*4+3], proj[2*4+3], proj[3*4+3]);
 #endif
 
-	glUniformMatrix4fv(dice_uniModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 	{
 		float ambient[3] = {0.2f, 0.3f, 0.3f};
@@ -198,8 +198,8 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 
 wurfel_dice::~wurfel_dice (void)
 {
-	glDeleteProgram (dice_shaderProgram);
-	glDeleteBuffers(1, &dice_ebo);
-	glDeleteBuffers(1, &dice_vbo);
-	glDeleteVertexArrays(1, &dice_vao);
+	glDeleteProgram (shaderProgram);
+	glDeleteBuffers(1, &ebo);
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
 }

@@ -13,6 +13,7 @@
 
 #include "cubic.hh"
 #include "dice.hh"
+#include "floor.hh"
 #include "lightstar.hh"
 
 const static float vertices[] =
@@ -67,8 +68,6 @@ const static float vertices[] =
     -1.0f,  1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
     -1.0f, -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
 };
-
-#include "floor.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -215,10 +214,9 @@ int main(int argc, char *argv[])
 #endif
 
 
-	floor_init ();
-
 	wurfel_cubic *cubic = new wurfel_cubic();
 	wurfel_dice *dice = new wurfel_dice();
+	wurfel_floor *floor = new wurfel_floor();
 	wurfel_lightstar *lightstar = new wurfel_lightstar();
 
 	auto t_start = std::chrono::high_resolution_clock::now();
@@ -342,53 +340,38 @@ int main(int argc, char *argv[])
 		light2[2] = 0.5f;
 
 #if 1
+		glEnable(GL_STENCIL_TEST);
 
+		// Draw floor MASK
+		glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilMask(0xFF); // Write to stencil buffer
 
-glEnable(GL_STENCIL_TEST);
+		//glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
 
-    // Draw floor
-    glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    glStencilMask(0xFF); // Write to stencil buffer
+		//glDepthMask(GL_FALSE); // Don't write to depth buffer
+		glClear(GL_STENCIL_BUFFER_BIT); // Clear stencil buffer (0 by default)
 
-//	glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
+		floor->render (true, glm::value_ptr(proj), glm::value_ptr(view));
 
-//    glDepthMask(GL_FALSE); // Don't write to depth buffer
-    glClear(GL_STENCIL_BUFFER_BIT); // Clear stencil buffer (0 by default)
+		//glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
 
-		floor_render (true, glm::value_ptr(proj), glm::value_ptr(view));
-
-  //  glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-
-    // Draw cube reflection
-    glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
-    glStencilMask(0x00); // Don't write anything to stencil buffer
-//    glDepthMask(GL_TRUE); // Write to depth buffer
-
-#if 0
-    model = glm::scale(
-        glm::translate(model, glm::vec3(0, 0, -1)),
-        glm::vec3(1, 1, -1)
-    );
-    glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
-#endif
+		// Draw cube reflection
+		glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
+		glStencilMask(0x00); // Don't write anything to stencil buffer
+		//glDepthMask(GL_TRUE); // Write to depth buffer
 
 		cubic->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, light2);
 		dice->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
 		lightstar->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
 
-//		glUniform3f(uniColor, 0.3f, 0.3f, 0.3f);
-  //  glDrawArrays(GL_TRIANGLES, 0, 36);
-//		glUniform3f(uniColor, 1.0f, 1.0f, 1.0f);
-
-glDisable(GL_STENCIL_TEST);
-//glClear(GL_DEPTH_BUFFER_BIT);
-
+		glDisable(GL_STENCIL_TEST);
+		//glClear(GL_DEPTH_BUFFER_BIT);
 #endif
 
-		floor_render (false, glm::value_ptr(proj), glm::value_ptr(view));
+		floor->render (false, glm::value_ptr(proj), glm::value_ptr(view));
 
 		cubic->render (false, glm::value_ptr(proj), glm::value_ptr(view), light1, light2);
 		dice->render (false, glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
@@ -399,8 +382,8 @@ glDisable(GL_STENCIL_TEST);
 
 	delete cubic; cubic = 0;
 	delete dice; dice = 0;
+	delete floor; floor = 0;
 	delete lightstar; lightstar = 0;
-	floor_cleanup ();
 
 #if 0
 	glDeleteTextures(2, textures);

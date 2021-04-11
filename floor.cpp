@@ -1,22 +1,37 @@
-const static float floor_vertices[] =
+#define GLEW_STATIC
+#include <GL/glew.h>
+
+#include <SDL_opengl.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+
+#include "floor.hh"
+
+const struct wurfel_floor::vertix_t wurfel_floor::vertices[4] =
 {
-        -0.5200f,  0.5200f,
-         0.5200f,  0.5200f,
-         0.5200f, -0.5200f,
-        -0.5200f, -0.5200f,
+	{{-0.5200f,  0.5200f,  0.0000f}},
+	{{ 0.5200f,  0.5200f,  0.0000f}},
+	{{ 0.5200f, -0.5200f,  0.0000f}},
+	{{-0.5200f, -0.5200f,  0.0000f}},
 };
 
-static const GLuint floor_elements[] =
+const struct wurfel_floor::element_t wurfel_floor::elements[2] =
 {
-    2, 1, 0,
-    0, 3, 2
+	{2, 1, 0},
+	{0, 3, 2}
 };
 
 const char *floor_vertexSource = R"glsl(
 	#version 150 core
-	in vec2 position;
+	in vec3 position;
 
-	out vec2 Position;
+	out vec3 Position;
 
 	uniform mat4 model;
 	uniform mat4 view;
@@ -24,13 +39,13 @@ const char *floor_vertexSource = R"glsl(
 
 	void main()
 	{
-		Position = position.xy;
-		gl_Position = proj * view * model * vec4(position, 0.0, 0.2);
+		Position = position;
+		gl_Position = proj * view * model * vec4(position, 0.2);
 	})glsl";
 
 const char *floor_fragmentSource = R"glsl(
 	#version 150 core
-	in vec2 Position;
+	in vec3 Position;
 
 	out vec4 outColor;
 	uniform vec3 Color1;
@@ -68,28 +83,18 @@ const char *floor_fragmentSource = R"glsl(
 		}
 	})glsl";
 
-GLuint floor_vao; // Vertex Array Objects (VAO)
-GLuint floor_vbo; // Vertex Buffer Object (VBO):
-GLuint floor_ebo; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them
-GLuint floor_shaderProgram;
-GLint floor_posAttrib;
-GLint floor_uniModel;
-GLint floor_uniView;
-GLint floor_uniProj;
-GLint floor_uniMode;
-
-static void floor_init (void)
+wurfel_floor::wurfel_floor (void)
 {
-	glGenVertexArrays (1, &floor_vao);
-	glBindVertexArray (floor_vao);
+	glGenVertexArrays (1, &vao);
+	glBindVertexArray (vao);
 
-	glGenBuffers (1, &floor_vbo);
-	glBindBuffer (GL_ARRAY_BUFFER, floor_vbo);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(floor_vertices), floor_vertices, GL_STATIC_DRAW);
+	glGenBuffers (1, &vbo);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo);
+	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glGenBuffers (1, &floor_ebo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, floor_ebo);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(floor_elements), floor_elements, GL_STATIC_DRAW);
+	glGenBuffers (1, &ebo);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 	GLuint vertexShader = glCreateShader (GL_VERTEX_SHADER);
 	glShaderSource (vertexShader, 1, &floor_vertexSource, NULL);
@@ -114,44 +119,50 @@ static void floor_init (void)
 		printf ("Failed to compile floor_fragmentSource:\n%s\n", buffer);
 	}
 
-	floor_shaderProgram = glCreateProgram ();
-	glAttachShader (floor_shaderProgram, vertexShader);
-	glAttachShader (floor_shaderProgram, fragmentShader);
+	shaderProgram = glCreateProgram ();
+	glAttachShader (shaderProgram, vertexShader);
+	glAttachShader (shaderProgram, fragmentShader);
 
-	glBindFragDataLocation(floor_shaderProgram, 0, "outColor");
-	glLinkProgram (floor_shaderProgram);
+	glBindFragDataLocation(shaderProgram, 0, "outColor");
+	glLinkProgram (shaderProgram);
 	glDeleteShader (vertexShader); // The finished program is not affected by this
 	glDeleteShader (fragmentShader);
 
-	glUseProgram (floor_shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
+	glUseProgram (shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
 
-	floor_posAttrib = glGetAttribLocation (floor_shaderProgram, "position"); /* local position inside the model */
-	floor_uniModel = glGetUniformLocation (floor_shaderProgram, "model"); /* model location in the world */
-	floor_uniView  = glGetUniformLocation (floor_shaderProgram, "view");   /* camera angle + position */
-	floor_uniProj  = glGetUniformLocation (floor_shaderProgram, "proj");   /* project perspective */
-	floor_uniMode = glGetUniformLocation (floor_shaderProgram, "Mode");
+	attrPosition = glGetAttribLocation (shaderProgram, "position"); /* local position inside the model */
+	uniModel = glGetUniformLocation (shaderProgram, "model"); /* model location in the world */
+	uniView  = glGetUniformLocation (shaderProgram, "view");   /* camera angle + position */
+	uniProj  = glGetUniformLocation (shaderProgram, "proj");   /* project perspective */
+	uniMode = glGetUniformLocation (shaderProgram, "Mode");
 }
 
-static void floor_render (bool mirror, float const *proj, float const *view)
+void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 {
-	glBindVertexArray (floor_vao);
-	glBindBuffer (GL_ARRAY_BUFFER, floor_vbo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, floor_ebo);
+	glBindVertexArray (vao);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-	glUseProgram (floor_shaderProgram);
+	glUseProgram (shaderProgram);
 
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color1"),     0.000f, 0.000f, 0.800f);
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "Color2"),     0.600f, 0.600f, 0.600f);
-	glUniform3f (glGetUniformLocation (floor_shaderProgram, "AvgColor"),   0.400f, 0.400f, 0.500f);
-	glUniform1f (glGetUniformLocation (floor_shaderProgram, "Frequency"),  8.0f);
+	glUniform3f (glGetUniformLocation (shaderProgram, "Color1"),     0.000f, 0.000f, 0.800f);
+	glUniform3f (glGetUniformLocation (shaderProgram, "Color2"),     0.600f, 0.600f, 0.600f);
+	glUniform3f (glGetUniformLocation (shaderProgram, "AvgColor"),   0.400f, 0.400f, 0.500f);
+	glUniform1f (glGetUniformLocation (shaderProgram, "Frequency"),  8.0f);
 
+	glEnableVertexAttribArray (attrPosition);
+	glVertexAttribPointer (
+		attrPosition,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof (vertices[0]),
+		(const void *)offsetof (struct wurfel_floor::vertix_t, position)
+	);
 
-	glEnableVertexAttribArray (floor_posAttrib);
-	glVertexAttribPointer (floor_posAttrib, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), 0);
-
-	glUniformMatrix4fv(floor_uniProj, 1, GL_FALSE, proj);
-	glUniformMatrix4fv(floor_uniView, 1, GL_FALSE, view);
-	glUniform1i (floor_uniMode, mirror == false ? 1 : 0);
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj);
+	glUniformMatrix4fv(uniView, 1, GL_FALSE, view);
+	glUniform1i (uniMode, mirror == false ? 1 : 0);
 
 	glm::mat4 model = glm::mat4(1.0f);
 #if 0
@@ -191,7 +202,7 @@ static void floor_render (bool mirror, float const *proj, float const *view)
 		proj[0*4+3], proj[1*4+3], proj[2*4+3], proj[3*4+3]);
 #endif
 
-	glUniformMatrix4fv(floor_uniModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 	if (mirror == false)
 	{
@@ -208,10 +219,10 @@ static void floor_render (bool mirror, float const *proj, float const *view)
 	}
 }
 
-static void floor_cleanup (void)
+wurfel_floor::~wurfel_floor (void)
 {
-	glDeleteProgram (floor_shaderProgram);
-	glDeleteBuffers(1, &floor_ebo);
-	glDeleteBuffers(1, &floor_vbo);
-	glDeleteVertexArrays(1, &floor_vao);
+	glDeleteProgram (shaderProgram);
+	glDeleteBuffers(1, &ebo);
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
 }

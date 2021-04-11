@@ -29,6 +29,7 @@ sdl2_opengl: \
 	sdl2_opengl.o \
 	cubic.o \
 	dice.o \
+	floor.o \
 	lightstar.o
 	$(CXX) $^ $(LDFLAGS) $(SDLLIBS) $(GLEWLIBS) $(OPENGLLIBS) -o $@
 
@@ -36,8 +37,8 @@ sdl2_opengl.o: \
 	sdl2_opengl.cpp \
 	cubic.hh \
 	dice.hh \
-	lightstar.hh \
-	floor.cpp
+	floor.hh \
+	lightstar.hh
 	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
 
 cubic.o: \
@@ -56,6 +57,11 @@ dice.o: \
 	dice-vert.cpp \
 	dice-geom.cpp \
 	dice-frag.cpp
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+
+floor.o: \
+	floor.cpp \
+	floor.hh
 	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
 
 lightstar.o: \
