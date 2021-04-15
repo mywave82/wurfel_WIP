@@ -19,12 +19,18 @@ class wurfel_floor
 		void render (bool mirror, float const *proj, float const *view);
 
 	private:
-		static const struct vertix_t vertices[4];
-		static const struct element_t elements[2];
+		/* the shiny flat part */
+		static const struct vertix_t vertices1[4];
+		static const struct element_t elements1[2];
 
-		GLuint vao; // Vertex Array Objects (VAO)
-		GLuint vbo; // Vertex Buffer Object (VBO):
-		GLuint ebo; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them
+		/* the frame */
+		static const struct vertix_t vertices2[40];
+		static const struct element_t elements2[74];
+
+
+		GLuint vao[2]; // Vertex Array Objects (VAO)
+		GLuint vbo[2]; // Vertex Buffer Object (VBO):
+		GLuint ebo[2]; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them
 		GLuint shaderProgram;
 		GLint attrPosition;
 		GLint attrib_vertexNormal;    /* per vertex */

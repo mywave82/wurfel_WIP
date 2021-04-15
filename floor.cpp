@@ -13,19 +13,193 @@
 
 #include "floor.hh"
 
-const struct wurfel_floor::vertix_t wurfel_floor::vertices[4] =
+const struct wurfel_floor::vertix_t wurfel_floor::vertices1[4] =
 {
-	{{-0.5200f,  0.5200f,  0.0000f}},
-	{{ 0.5200f,  0.5200f,  0.0000f}},
-	{{ 0.5200f, -0.5200f,  0.0000f}},
-	{{-0.5200f, -0.5200f,  0.0000f}},
+	{{-0.5210f,  0.5210f,  0.0000f}},
+	{{ 0.5210f,  0.5210f,  0.0000f}},
+	{{ 0.5210f, -0.5210f,  0.0000f}},
+	{{-0.5210f, -0.5210f,  0.0000f}},
 };
 
-const struct wurfel_floor::element_t wurfel_floor::elements[2] =
+const struct wurfel_floor::element_t wurfel_floor::elements1[2] =
 {
 	{2, 1, 0},
 	{0, 3, 2}
 };
+
+
+
+const struct wurfel_floor::vertix_t wurfel_floor::vertices2[40] =
+{
+	{{-0.5690f,  0.5690f, -0.0050f}}, //  0
+	{{-0.5700f,  0.5700f, -0.0050f}}, //  1
+	{{-0.5700f,  0.5700f, -0.0040f}}, //  2
+	{{-0.5700f,  0.5700f,  0.0240f}}, //  3
+	{{-0.5700f,  0.5700f,  0.0250f}}, //  4
+	{{-0.5690f,  0.5690f,  0.0250f}}, //  5
+	{{-0.5210f,  0.5210f,  0.0250f}}, //  6
+	{{-0.5200f,  0.5200f,  0.0250f}}, //  7
+	{{-0.5200f,  0.5200f,  0.0240f}}, //  8
+	{{-0.5200f,  0.5200f, -0.0010f}}, //  9
+
+	{{ 0.5690f,  0.5690f, -0.0050f}}, // 10
+	{{ 0.5700f,  0.5700f, -0.0050f}}, // 11
+	{{ 0.5700f,  0.5700f, -0.0040f}}, // 12
+	{{ 0.5700f,  0.5700f,  0.0240f}}, // 13
+	{{ 0.5700f,  0.5700f,  0.0250f}}, // 14
+	{{ 0.5690f,  0.5690f,  0.0250f}}, // 15
+	{{ 0.5210f,  0.5210f,  0.0250f}}, // 16
+	{{ 0.5200f,  0.5200f,  0.0250f}}, // 17
+	{{ 0.5200f,  0.5200f,  0.0240f}}, // 18
+	{{ 0.5200f,  0.5200f, -0.0010f}}, // 19
+
+	{{ 0.5690f, -0.5690f, -0.0050f}}, // 20
+	{{ 0.5700f, -0.5700f, -0.0050f}}, // 21
+	{{ 0.5700f, -0.5700f, -0.0040f}}, // 22
+	{{ 0.5700f, -0.5700f,  0.0240f}}, // 23
+	{{ 0.5700f, -0.5700f,  0.0250f}}, // 24
+	{{ 0.5690f, -0.5690f,  0.0250f}}, // 25
+	{{ 0.5210f, -0.5210f,  0.0250f}}, // 26
+	{{ 0.5200f, -0.5200f,  0.0250f}}, // 27
+	{{ 0.5200f, -0.5200f,  0.0240f}}, // 28
+	{{ 0.5200f, -0.5200f, -0.0010f}}, // 29
+
+	{{-0.5690f, -0.5690f, -0.0050f}}, // 30
+	{{-0.5700f, -0.5700f, -0.0050f}}, // 31
+	{{-0.5700f, -0.5700f, -0.0040f}}, // 32
+	{{-0.5700f, -0.5700f,  0.0240f}}, // 33
+	{{-0.5700f, -0.5700f,  0.0250f}}, // 34
+	{{-0.5690f, -0.5690f,  0.0250f}}, // 35
+	{{-0.5210f, -0.5210f,  0.0250f}}, // 36
+	{{-0.5200f, -0.5200f,  0.0250f}}, // 37
+	{{-0.5200f, -0.5200f,  0.0240f}}, // 38
+	{{-0.5200f, -0.5200f, -0.0010f}}, // 39
+};
+
+const struct wurfel_floor::element_t wurfel_floor::elements2[74] =
+{
+	/* bottom center */
+	{ 0, 10, 30},
+	{10, 20, 30},
+
+	/* bottom thin edge */
+	{ 0, 11, 10},
+	{ 0,  1, 11},
+
+	{10, 21, 20,},
+	{20, 11, 21,},
+
+	{20, 31, 30},
+	{20, 21, 31},
+
+	{30,  1, 0},
+	{30, 31, 1},
+
+	/* bottom side edge */
+	{ 1, 12, 11},
+	{ 1,  2, 12},
+
+	{11, 22, 21},
+	{11, 12, 22},
+
+	{21, 32, 31},
+	{21, 22, 32},
+
+	{31,  2,  1},
+	{31, 32,  2},
+
+	/* middle side edge */
+	{ 2, 13, 12},
+	{ 2,  3, 13},
+
+	{12, 23, 22},
+	{12, 13, 23},
+
+	{22, 33, 32},
+	{22, 23, 33},
+
+	{32,  3,  2},
+	{32, 33,  3},
+
+	/* top side edge */
+	{ 3, 14, 13},
+	{ 3,  4, 14},
+
+	{13, 24, 23},
+	{13, 14, 24},
+
+	{23, 34, 33},
+	{23, 24, 34},
+
+	{33,  4,  3},
+	{33, 34,  4},
+
+	/* top outer edge */
+	{ 4, 15, 14},
+	{ 4,  5, 15},
+
+	{14, 25, 24},
+	{14, 15, 25},
+
+	{24, 35, 34},
+	{24, 25, 35},
+
+	{34,  5,  4},
+	{34, 35,  5},
+
+	/* top central edge */
+	{ 5, 16, 15},
+	{ 5,  6, 16},
+
+	{15, 26, 25},
+	{15, 16, 26},
+
+	{25, 36, 35},
+	{25, 26, 36},
+
+	{35,  6,  5},
+	{35, 36,  6},
+
+	/* top inner edge */
+	{ 6, 17, 16},
+	{ 6,  7, 17},
+
+	{16, 27, 26},
+	{16, 17, 27},
+
+	{26, 37, 36},
+	{26, 27, 37},
+
+	{36,  7,  6},
+	{36, 37,  7},
+
+	/* inside top edge */
+	{ 7, 18, 17},
+	{ 7,  8, 18},
+
+	{17, 28, 27},
+	{17, 18, 28},
+
+	{27, 38, 37},
+	{27, 28, 38},
+
+	{37,  8,  7},
+	{37, 38,  8},
+
+	/* inside edge */
+	{ 8, 19, 18},
+	{ 8,  9, 19},
+
+	{18, 29, 28},
+	{18, 19, 29},
+
+	{28, 39, 38},
+	{28, 29, 39},
+
+	{38,  9,  8},
+	{38,  39, 9}
+};
+
 
 const char *floor_vertexSource = R"glsl(
 	#version 150 core
@@ -70,7 +244,7 @@ const char *floor_fragmentSource = R"glsl(
 		vec2 checkPos = fract(Position.xy * Frequency);
 		//if (fuzzMax < 0.5)
 		{
-			vec2 p =          smoothstep(vec2(0.5), fuzz + vec2(0.5), checkPos) + 
+			vec2 p =          smoothstep(vec2(0.5), fuzz + vec2(0.5), checkPos) +
 			           (1.0 - smoothstep(vec2(0.0), fuzz,             checkPos));
 
 			color = mix(Color1, Color2, p.x * p.y + (1.0 - p.x) * (1.0 - p.y));
@@ -85,16 +259,21 @@ const char *floor_fragmentSource = R"glsl(
 
 wurfel_floor::wurfel_floor (void)
 {
-	glGenVertexArrays (1, &vao);
-	glBindVertexArray (vao);
+	glGenVertexArrays (2, vao);
+	glGenBuffers (2, vbo);
+	glGenBuffers (2, ebo);
 
-	glGenBuffers (1, &vbo);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindVertexArray (vao[0]);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
+	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements1), elements1, GL_STATIC_DRAW);
 
-	glGenBuffers (1, &ebo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+	glBindVertexArray (vao[1]);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
+	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements2), elements2, GL_STATIC_DRAW);
 
 	GLuint vertexShader = glCreateShader (GL_VERTEX_SHADER);
 	glShaderSource (vertexShader, 1, &floor_vertexSource, NULL);
@@ -139,9 +318,9 @@ wurfel_floor::wurfel_floor (void)
 
 void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 {
-	glBindVertexArray (vao);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBindVertexArray (vao[0]);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
 
 	glUseProgram (shaderProgram);
 
@@ -156,7 +335,7 @@ void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 		3,
 		GL_FLOAT,
 		GL_FALSE,
-		sizeof (vertices[0]),
+		sizeof (vertices1[0]),
 		(const void *)offsetof (struct wurfel_floor::vertix_t, position)
 	);
 
@@ -217,12 +396,45 @@ void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 	{
 		glDisable (GL_BLEND);
 	}
+
+	if (mirror == false)
+	{
+		glBindVertexArray (vao[1]);
+		glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+
+		glUseProgram (shaderProgram);
+
+		glUniform3f (glGetUniformLocation (shaderProgram, "Color1"),     0.000f, 0.000f, 0.800f);
+		glUniform3f (glGetUniformLocation (shaderProgram, "Color2"),     0.600f, 0.600f, 0.600f);
+		glUniform3f (glGetUniformLocation (shaderProgram, "AvgColor"),   0.400f, 0.400f, 0.500f);
+		glUniform1f (glGetUniformLocation (shaderProgram, "Frequency"),  8.0f);
+
+		glEnableVertexAttribArray (attrPosition);
+		glVertexAttribPointer (
+			attrPosition,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof (vertices1[0]),
+			(const void *)offsetof (struct wurfel_floor::vertix_t, position)
+		);
+
+		glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj);
+		glUniformMatrix4fv(uniView, 1, GL_FALSE, view);
+		glUniform1i (uniMode, mirror == false ? 1 : 0);
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+
+		glDrawElements (GL_TRIANGLES, 74*3, GL_UNSIGNED_INT, 0);
+	}
 }
 
 wurfel_floor::~wurfel_floor (void)
 {
 	glDeleteProgram (shaderProgram);
-	glDeleteBuffers(1, &ebo);
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(2, ebo);
+	glDeleteBuffers(2, vbo);
+	glDeleteVertexArrays(2, vao);
 }
