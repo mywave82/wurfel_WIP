@@ -16,59 +16,6 @@
 #include "floor.hh"
 #include "lightstar.hh"
 
-const static float vertices[] =
-{
-   /*      position   |       color     | texture   */
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-
-    -1.0f, -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-     1.0f, -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-     1.0f,  1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-     1.0f,  1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-    -1.0f,  1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    -1.0f, -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
-};
-
 int main(int argc, char *argv[])
 {
 	uint32_t WindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
@@ -101,118 +48,6 @@ int main(int argc, char *argv[])
 
 	glewExperimental = GL_TRUE;
 	glewInit();
-
-
-		GLuint vao; // Vertex Array Objects (VAO)
-		glGenVertexArrays (1, &vao);
-		glBindVertexArray (vao);
-
-		GLuint vbo; // Vertex Buffer Object (VBO):
-		glGenBuffers (1, &vbo);
-		glBindBuffer (GL_ARRAY_BUFFER, vbo);
-		glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		const char *vertexSource = R"glsl(
-			#version 150 core
-			in vec3 position;
-			in vec3 color;
-			in vec2 texcoord;
-
-			out vec3 Color;
-			out vec2 Texcoord;
-
-			uniform mat4 model;
-			uniform mat4 view;
-			uniform mat4 proj;
-
-			uniform vec3 overrideColor;
-
-			void main()
-			{
-				gl_Position = proj * view * model * vec4(position, 1.0);
-				Color = overrideColor * color;
-				Texcoord = texcoord;
-			})glsl";
-
-		GLuint vertexShader = glCreateShader (GL_VERTEX_SHADER);
-		glShaderSource (vertexShader, 1, &vertexSource, NULL);
-		glCompileShader (vertexShader);
-		GLint status;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-		if (status == false)
-		{
-			char buffer[512];
-			glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-			printf ("Failed to compile vertexSource:\n%s\n", buffer);
-		}
-
-		const char *fragmentSource = R"glsl(
-			#version 150 core
-			in vec3 Color;
-			in vec2 Texcoord;
-
-			out vec4 outColor;
-
-			uniform sampler2D texKitten;
-			uniform sampler2D texPuppy;
-
-			void main()
-			{
-			       outColor = vec4(Color, 1.0) * mix(texture(texPuppy, Texcoord), texture(texKitten, Texcoord), 0.5);
-			})glsl";
-
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource (fragmentShader, 1, &fragmentSource, NULL);
-		glCompileShader (fragmentShader);
-		glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
-		if (status == false)
-		{
-			char buffer[512];
-			glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-			printf ("Failed to compile fragmentSource:\n%s\n", buffer);
-		}
-
-		GLuint shaderProgram = glCreateProgram ();
-		glAttachShader (shaderProgram, vertexShader);
-		glAttachShader (shaderProgram, fragmentShader);
-
-		glBindFragDataLocation(shaderProgram, 0, "outColor"); // This is the default when only when output, so not needed
-		glLinkProgram (shaderProgram);
-		glDeleteShader (vertexShader); // The finished program is not affected by this
-		glDeleteShader (fragmentShader);
-
-		glUseProgram (shaderProgram); /* program must be the active one, else glUniform1i will not perform as expected for the second texture */
-#if 0
-		GLuint textures[2];
-		glGenTextures (2, textures);
-		{
-			int width, height;
-			unsigned char *image;
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture (GL_TEXTURE_2D, textures[0]);
-			image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-			SOIL_free_image_data (image);
-			glUniform1i(glGetUniformLocation(shaderProgram, "texKitten"), 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture (GL_TEXTURE_2D, textures[1]);
-			image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-			SOIL_free_image_data (image);
-			glUniform1i(glGetUniformLocation(shaderProgram, "texPuppy"), 1);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-#endif
-
 
 	wurfel_cubic *cubic = new wurfel_cubic();
 	wurfel_dice *dice = new wurfel_dice();
@@ -384,13 +219,6 @@ int main(int argc, char *argv[])
 	delete dice; dice = 0;
 	delete floor; floor = 0;
 	delete lightstar; lightstar = 0;
-
-#if 0
-	glDeleteTextures(2, textures);
-	glDeleteProgram (shaderProgram);
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
-#endif
 
 	SDL_GL_DeleteContext(context);
 	SDL_Quit();
