@@ -1,5 +1,9 @@
 *.o
 sdl2_opengl
+border-frag.cpp
+border-vert.cpp
+floor-frag.cpp
+floor-vert.cpp
 cubic-frag.cpp
 cubic-geom.cpp
 cubic-vert.cpp

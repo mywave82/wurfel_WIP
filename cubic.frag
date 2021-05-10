@@ -147,8 +147,17 @@ void main()
 	float diff1 = max(dot(Normal, light1Dir), 0.0);
 	vec3 diffuse1 = diff1 * light1Color;
 
-	vec3 light2Dir = normalize(light2Pos - _WorldPosition);
-	float diff2 = max(dot(Normal, light2Dir), 0.0);
+	vec3 light2Dir1 = normalize(light2Pos + vec3( 0.5,  0.5, 0.0) - _WorldPosition);
+	vec3 light2Dir2 = normalize(light2Pos + vec3(-0.5,  0.5, 0.0) - _WorldPosition);
+	vec3 light2Dir3 = normalize(light2Pos + vec3( 0.5, -0.5, 0.0) - _WorldPosition);
+	vec3 light2Dir4 = normalize(light2Pos + vec3(-0.5, -0.5, 0.0) - _WorldPosition);
+
+	float diff2 = clamp(
+		max(
+			max(dot(Normal, light2Dir1), dot(Normal, light2Dir2)),
+			max(dot(Normal, light2Dir3), dot(Normal, light2Dir4))
+		), 0.0, 1.0
+		);
 	vec3 diffuse2 = diff2 * light2Color;
 
 	vec3 result = (ambient + diffuse1 + diffuse2) * background;

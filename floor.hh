@@ -31,15 +31,15 @@ class wurfel_floor
 		GLuint vao[2]; // Vertex Array Objects (VAO)
 		GLuint vbo[2]; // Vertex Buffer Object (VBO):
 		GLuint ebo[2]; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them
-		GLuint shaderProgram;
-		GLint attrPosition;
-		GLint attrib_vertexNormal;    /* per vertex */
-		GLint uniModel;
-		GLint uniView;
-		GLint uniProj;
-		GLint uniMatrix;
+		GLuint shaderProgram[2];
+		GLint attrPosition[2];
+		GLint uniModel[2];
+		GLint uniView[2];
+		GLint uniProj[2];
+
+		/* floor */
 		GLint uniMode;
-		GLint uniform_ambient;
-		GLint uniform_lightPos;
-		GLint uniform_lightColor;
+
+		/* border */
+		GLint uniMatrix;
 };

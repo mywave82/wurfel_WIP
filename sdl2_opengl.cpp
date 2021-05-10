@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
 	int FullScreen = 0;
 	int windowWidth = 800;
 	int windowHeight = 600;
-	int cycle = 1;
 	int quit = 0;
+	int pause = 0;
 	float scale = 1.0f;
 #if 1
 	float rotx = 180.0f;
@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
 	wurfel_lightstar *lightstar = new wurfel_lightstar();
 
 	auto t_start = std::chrono::high_resolution_clock::now();
+	auto t_now = t_start;
+
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -103,7 +105,7 @@ int main(int argc, char *argv[])
 						case 'u': traz *= 1.1; break;
 						case 'j': traz /= 1.1; break;
 						case ' ':
-							cycle = !cycle;
+							pause = !pause;
 							break;
 						case 'z':
 							FullScreen = !FullScreen;
@@ -126,9 +128,12 @@ int main(int argc, char *argv[])
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Calculate transformation
-		auto t_now = std::chrono::high_resolution_clock::now();
+		if (!pause)
+		{
+			t_now = std::chrono::high_resolution_clock::now();
+		}
 
-		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+		//float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
 		float timeCamRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 20000000000ll).count(); /* resolution is ten second */
 		float CamRotation = glm::radians(timeCamRotation * 18.0); /* 20 seconds * 18.0 = 360 degrees */

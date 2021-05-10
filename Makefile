@@ -16,6 +16,7 @@ clean:
 	rm -f *.o dice-data-generator sdl2_opengl \
 	cubic-vert.cpp cubic-geom.cpp cubic-frag.cpp \
 	dice-vert.cpp dice-geom.cpp dice-frag.cpp \
+	floor-vert.cpp floor-frag.cpp \
 	lightstar-vert.cpp lightstar-geom.cpp lightstar-frag.cpp
 
 dist-clean: clean
@@ -61,6 +62,10 @@ dice.o: \
 
 floor.o: \
 	floor.cpp \
+	floor-vert.cpp \
+	floor-frag.cpp \
+	border-vert.cpp \
+	border-frag.cpp \
 	floor.hh
 	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
 
@@ -87,6 +92,18 @@ dice-data.cpp: \
 dice-data-generator: \
 	dice-data-generator.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
+
+border-vert.cpp: \
+	border.vert
+	echo "static const char *border_vertexSource = R\"glsl(" > $@
+	cat $< >> $@
+	echo ")glsl\";" >> $@
+
+border-frag.cpp: \
+	border.frag
+	echo "static const char *border_fragmentSource = R\"glsl(" > $@
+	cat $< >> $@
+	echo ")glsl\";" >> $@
 
 cubic-vert.cpp: \
 	cubic.vert
@@ -121,6 +138,18 @@ dice-geom.cpp: \
 dice-frag.cpp: \
 	dice.frag
 	echo "static const char *dice_fragmentSource = R\"glsl(" > $@
+	cat $< >> $@
+	echo ")glsl\";" >> $@
+
+floor-vert.cpp: \
+	floor.vert
+	echo "static const char *floor_vertexSource = R\"glsl(" > $@
+	cat $< >> $@
+	echo ")glsl\";" >> $@
+
+floor-frag.cpp: \
+	floor.frag
+	echo "static const char *floor_fragmentSource = R\"glsl(" > $@
 	cat $< >> $@
 	echo ")glsl\";" >> $@
 
