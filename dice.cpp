@@ -189,7 +189,7 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 	{
 		glFrontFace (GL_CW);
 	}
-	glDrawElements (GL_TRIANGLES, sizeof (elements)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+	glDrawElements (GL_TRIANGLES, sizeof (elements)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0);
 	if (mirror == true)
 	{
 		glFrontFace (GL_CCW);

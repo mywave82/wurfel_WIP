@@ -268,13 +268,13 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 		switch (letter)
 		{
 			case 0: case 4:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_C)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
+				glDrawElements (GL_TRIANGLES, sizeof (elements_C)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 1:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_U)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
+				glDrawElements (GL_TRIANGLES, sizeof (elements_U)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 2:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_B)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
+				glDrawElements (GL_TRIANGLES, sizeof (elements_B)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 3:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_I)/sizeof(GLuint), GL_UNSIGNED_INT, 0); break;
+				glDrawElements (GL_TRIANGLES, sizeof (elements_I)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 		}
 
 		if (mirror == true)

@@ -180,7 +180,7 @@ void wurfel_lightstar::render (bool mirror, float const *proj, float const *view
 	glEnable (GL_BLEND);
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	glDrawElements (GL_TRIANGLES, sizeof (elements)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+	glDrawElements (GL_TRIANGLES, sizeof (elements)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0);
 
 	glDisable (GL_BLEND);
 
