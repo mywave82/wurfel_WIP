@@ -1,5 +1,10 @@
+#ifndef SDL_GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
+#else
+// Let SDL_opengl.h include glew functions
+#define GL_GLEXT_PROTOTYPES 1
+#endif
 
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -46,8 +51,12 @@ int main(int argc, char *argv[])
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 	SDL_GL_SetSwapInterval (0); /* Disable VSYNC */
 
+#ifndef SDL_GLEW
 	glewExperimental = GL_TRUE;
 	glewInit();
+#else
+	// We let SDL handle this
+#endif
 
 	wurfel_cubic *cubic = new wurfel_cubic();
 	wurfel_dice *dice = new wurfel_dice();

@@ -4,8 +4,13 @@ LDFLAGS=-g
 SDLCFLAGS=`pkg-config --cflags sdl2`
 SDLLIBS=`pkg-config --libs sdl2`
 
+ifeq (NOT_SDL,1)
 GLEWCFLAGS=`pkg-config --cflags glew`
 GLEWLIBS=`pkg-config --libs glew`
+else
+GLEWCFLAGS=-DSDL_GLEW=1
+GLEWLIBS=
+endif
 
 OPENGLCFLAGS=`pkg-config --cflags opengl`
 OPENGLLIBS=`pkg-config --libs opengl`

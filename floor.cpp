@@ -1,5 +1,10 @@
+#ifndef SDL_GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
+#else
+// Let SDL_opengl.h include glew functions
+#define GL_GLEXT_PROTOTYPES 1
+#endif
 
 #include <SDL_opengl.h>
 
