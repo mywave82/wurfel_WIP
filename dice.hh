@@ -15,7 +15,11 @@ class wurfel_dice
 	};
 
 	public:
+#ifdef SDL_GLSYMBOL
+		wurfel_dice (const struct DrawFunctions_t *DrawFunctions);
+#else
 		wurfel_dice (void);
+#endif
 		~wurfel_dice (void);
 
 		void render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/);
@@ -24,6 +28,9 @@ class wurfel_dice
 		static const struct vertix_t vertices[1569];
 		static const struct element_t elements[3102];
 
+#ifdef SDL_GLSYMBOL
+		const struct DrawFunctions_t *DrawFunctions;
+#endif
 		GLuint vao; // Vertex Array Objects (VAO)
 		GLuint vbo; // Vertex Buffer Object (VBO):
 		GLuint ebo; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them

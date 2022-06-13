@@ -6,7 +6,11 @@
 #define GL_GLEXT_PROTOTYPES 1
 #endif
 
+#ifdef SDL_GLSYMBOL
+#include "sdl2_opengl.hh"
+#else
 #include <SDL_opengl.h>
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -209,127 +213,141 @@ const struct wurfel_floor::element_t wurfel_floor::elements2[74] =
 #include "floor-vert.cpp"
 #include "floor-frag.cpp"
 
-wurfel_floor::wurfel_floor (void)
+#ifdef SDL_GLSYMBOL
+#define D this->DrawFunctions->
+#else
+#define D
+#endif
+
+#ifdef SDL_GLSYMBOL
+wurfel_floor::wurfel_floor (const struct DrawFunctions_t *DrawFunctions)
+#else
+wurfel_floor::wurfel_floor ()
+#endif
 {
 	GLint status;
 	GLuint vertexShader;
 	GLuint fragmentShader;
 
-	glGenVertexArrays (2, vao);
-	glGenBuffers (2, vbo);
-	glGenBuffers (2, ebo);
+#ifdef SDL_GLSYMBOL
+	this->DrawFunctions = DrawFunctions;
+#endif
+
+	D glGenVertexArrays (2, vao);
+	D glGenBuffers (2, vbo);
+	D glGenBuffers (2, ebo);
 
 	/* initialize the floor */
 
-	glBindVertexArray (vao[0]);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements1), elements1, GL_STATIC_DRAW);
+	D glBindVertexArray (vao[0]);
+	D glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements1), elements1, GL_STATIC_DRAW);
 
-	vertexShader = glCreateShader (GL_VERTEX_SHADER);
-	glShaderSource (vertexShader, 1, &floor_vertexSource, NULL);
-	glCompileShader (vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	vertexShader = D glCreateShader (GL_VERTEX_SHADER);
+	D glShaderSource (vertexShader, 1, &floor_vertexSource, NULL);
+	D glCompileShader (vertexShader);
+	D glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
 		printf ("Failed to compile floor_vertexSource:\n%s\n", buffer);
 	}
 
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource (fragmentShader, 1, &floor_fragmentSource, NULL);
-	glCompileShader (fragmentShader);
-	glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
+	fragmentShader = D glCreateShader(GL_FRAGMENT_SHADER);
+	D glShaderSource (fragmentShader, 1, &floor_fragmentSource, NULL);
+	D glCompileShader (fragmentShader);
+	D glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
 		printf ("Failed to compile floor_fragmentSource:\n%s\n", buffer);
 	}
 
-	shaderProgram[0] = glCreateProgram ();
-	glAttachShader (shaderProgram[0], vertexShader);
-	glAttachShader (shaderProgram[0], fragmentShader);
+	shaderProgram[0] = D glCreateProgram ();
+	D glAttachShader (shaderProgram[0], vertexShader);
+	D glAttachShader (shaderProgram[0], fragmentShader);
 
-	glBindFragDataLocation(shaderProgram[0], 0, "outColor");
-	glLinkProgram (shaderProgram[0]);
-	glDeleteShader (vertexShader); // The finished program is not affected by this
-	glDeleteShader (fragmentShader);
+	D glBindFragDataLocation(shaderProgram[0], 0, "outColor");
+	D glLinkProgram (shaderProgram[0]);
+	D glDeleteShader (vertexShader); // The finished program is not affected by this
+	D glDeleteShader (fragmentShader);
 
-	glUseProgram (shaderProgram[0]); /* program must be the activated once before glGetAttribLocation() and friends work */
+	D glUseProgram (shaderProgram[0]); /* program must be the activated once before glGetAttribLocation() and friends work */
 
-	attrPosition[0] = glGetAttribLocation (shaderProgram[0], "position"); /* local position inside the model */
-	uniModel[0] = glGetUniformLocation (shaderProgram[0], "model"); /* model location in the world */
-	uniView[0] = glGetUniformLocation (shaderProgram[0], "view");   /* camera angle + position */
-	uniProj[0] = glGetUniformLocation (shaderProgram[0], "proj");   /* project perspective */
-	uniMode = glGetUniformLocation (shaderProgram[0], "Mode");
+	attrPosition[0] = D glGetAttribLocation (shaderProgram[0], "position"); /* local position inside the model */
+	uniModel[0] = D glGetUniformLocation (shaderProgram[0], "model"); /* model location in the world */
+	uniView[0] = D glGetUniformLocation (shaderProgram[0], "view");   /* camera angle + position */
+	uniProj[0] = D glGetUniformLocation (shaderProgram[0], "proj");   /* project perspective */
+	uniMode = D glGetUniformLocation (shaderProgram[0], "Mode");
 
 
 	/* initialize the border */
 
-	glBindVertexArray (vao[1]);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements2), elements2, GL_STATIC_DRAW);
+	D glBindVertexArray (vao[1]);
+	D glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements2), elements2, GL_STATIC_DRAW);
 
-	vertexShader = glCreateShader (GL_VERTEX_SHADER);
-	glShaderSource (vertexShader, 1, &border_vertexSource, NULL);
-	glCompileShader (vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	vertexShader = D glCreateShader (GL_VERTEX_SHADER);
+	D glShaderSource (vertexShader, 1, &border_vertexSource, NULL);
+	D glCompileShader (vertexShader);
+	D glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
 		printf ("Failed to compile border_vertexSource:\n%s\n", buffer);
 	}
 
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource (fragmentShader, 1, &border_fragmentSource, NULL);
-	glCompileShader (fragmentShader);
-	glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
+	fragmentShader = D glCreateShader(GL_FRAGMENT_SHADER);
+	D glShaderSource (fragmentShader, 1, &border_fragmentSource, NULL);
+	D glCompileShader (fragmentShader);
+	D glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
 		printf ("Failed to compile border_fragmentSource:\n%s\n", buffer);
 	}
 
-	shaderProgram[1] = glCreateProgram ();
-	glAttachShader (shaderProgram[1], vertexShader);
-	glAttachShader (shaderProgram[1], fragmentShader);
+	shaderProgram[1] = D glCreateProgram ();
+	D glAttachShader (shaderProgram[1], vertexShader);
+	D glAttachShader (shaderProgram[1], fragmentShader);
 
-	glBindFragDataLocation(shaderProgram[1], 0, "outColor");
-	glLinkProgram (shaderProgram[1]);
-	glDeleteShader (vertexShader); // The finished program is not affected by this
-	glDeleteShader (fragmentShader);
+	D glBindFragDataLocation(shaderProgram[1], 0, "outColor");
+	D glLinkProgram (shaderProgram[1]);
+	D glDeleteShader (vertexShader); // The finished program is not affected by this
+	D glDeleteShader (fragmentShader);
 
-	glUseProgram (shaderProgram[1]); /* program must be the activated once before glGetAttribLocation() and friends work */
+	D glUseProgram (shaderProgram[1]); /* program must be the activated once before glGetAttribLocation() and friends work */
 
-	attrPosition[1] = glGetAttribLocation (shaderProgram[1], "position"); /* local position inside the model */
-	uniModel[1] = glGetUniformLocation (shaderProgram[1], "model"); /* model location in the world */
-	uniView[1]  = glGetUniformLocation (shaderProgram[1], "view");   /* camera angle + position */
-	uniProj[1]  = glGetUniformLocation (shaderProgram[1], "proj");   /* project perspective */
-	uniMatrix = glGetUniformLocation (shaderProgram[1], "matrix");   /* texture-matrix */
+	attrPosition[1] = D glGetAttribLocation (shaderProgram[1], "position"); /* local position inside the model */
+	uniModel[1] = D glGetUniformLocation (shaderProgram[1], "model"); /* model location in the world */
+	uniView[1]  = D glGetUniformLocation (shaderProgram[1], "view");   /* camera angle + position */
+	uniProj[1]  = D glGetUniformLocation (shaderProgram[1], "proj");   /* project perspective */
+	uniMatrix = D glGetUniformLocation (shaderProgram[1], "matrix");   /* texture-matrix */
 }
 
 void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 {
-	glBindVertexArray (vao[0]);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+	D glBindVertexArray (vao[0]);
+	D glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
 
-	glUseProgram (shaderProgram[0]);
+	D glUseProgram (shaderProgram[0]);
 
-	glUniform3f (glGetUniformLocation (shaderProgram[0], "Color1"),     0.000f, 0.000f, 0.800f);
-	glUniform3f (glGetUniformLocation (shaderProgram[0], "Color2"),     0.600f, 0.600f, 0.600f);
-	glUniform3f (glGetUniformLocation (shaderProgram[0], "AvgColor"),   0.400f, 0.400f, 0.500f);
-	glUniform1f (glGetUniformLocation (shaderProgram[0], "Frequency"),  8.0f);
+	D glUniform3f (D glGetUniformLocation (shaderProgram[0], "Color1"),     0.000f, 0.000f, 0.800f);
+	D glUniform3f (D glGetUniformLocation (shaderProgram[0], "Color2"),     0.600f, 0.600f, 0.600f);
+	D glUniform3f (D glGetUniformLocation (shaderProgram[0], "AvgColor"),   0.400f, 0.400f, 0.500f);
+	D glUniform1f (D glGetUniformLocation (shaderProgram[0], "Frequency"),  8.0f);
 
-	glEnableVertexAttribArray (attrPosition[0]);
-	glVertexAttribPointer (
+	D glEnableVertexAttribArray (attrPosition[0]);
+	D glVertexAttribPointer (
 		attrPosition[0],
 		3,
 		GL_FLOAT,
@@ -338,38 +356,38 @@ void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 		(const void *)offsetof (struct wurfel_floor::vertix_t, position)
 	);
 
-	glUniformMatrix4fv(uniProj[0], 1, GL_FALSE, proj);
-	glUniformMatrix4fv(uniView[0], 1, GL_FALSE, view);
-	glUniform1i (uniMode, mirror == false ? 1 : 0);
+	D glUniformMatrix4fv(uniProj[0], 1, GL_FALSE, proj);
+	D glUniformMatrix4fv(uniView[0], 1, GL_FALSE, view);
+	D glUniform1i (uniMode, mirror == false ? 1 : 0);
 
 	glm::mat4 model = glm::mat4(1.0f);
 
-	glUniformMatrix4fv(uniModel[0], 1, GL_FALSE, glm::value_ptr(model));
+	D glUniformMatrix4fv(uniModel[0], 1, GL_FALSE, glm::value_ptr(model));
 
 	if (mirror == false)
 	{
-		glEnable (GL_BLEND);
+		D glEnable (GL_BLEND);
 
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		D glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		D glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	}
-	glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	D glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	if (mirror == false)
 	{
-		glDisable (GL_BLEND);
+		D glDisable (GL_BLEND);
 	}
 
 	if (mirror == false)
 	{
-		glBindVertexArray (vao[1]);
-		glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+		D glBindVertexArray (vao[1]);
+		D glBindBuffer (GL_ARRAY_BUFFER, vbo[1]);
+		D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
 
-		glUseProgram (shaderProgram[1]);
+		D glUseProgram (shaderProgram[1]);
 
-		glEnableVertexAttribArray (attrPosition[1]);
-		glVertexAttribPointer (
+		D glEnableVertexAttribArray (attrPosition[1]);
+		D glVertexAttribPointer (
 			attrPosition[1],
 			3,
 			GL_FLOAT,
@@ -378,26 +396,26 @@ void wurfel_floor::render (bool mirror, float const *proj, float const *view)
 			(const void *)offsetof (struct wurfel_floor::vertix_t, position)
 		);
 
-		glUniformMatrix4fv(uniProj[1], 1, GL_FALSE, proj);
-		glUniformMatrix4fv(uniView[1], 1, GL_FALSE, view);
+		D glUniformMatrix4fv(uniProj[1], 1, GL_FALSE, proj);
+		D glUniformMatrix4fv(uniView[1], 1, GL_FALSE, view);
 
 		glm::mat4 model = glm::mat4(1.0f);
-		glUniformMatrix4fv(uniModel[1], 1, GL_FALSE, glm::value_ptr(model));
+		D glUniformMatrix4fv(uniModel[1], 1, GL_FALSE, glm::value_ptr(model));
 
 		glm::mat4 matrix = glm::mat4(1.0f);
 		matrix = glm::translate (matrix, glm::vec3(10.0f, 10.0f, 100.0f));
 		matrix = glm::scale (matrix, glm::vec3(38.55f, 38.55f, 38.55f));
-		glUniformMatrix4fv(uniMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
+		D glUniformMatrix4fv(uniMatrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
-		glDrawElements (GL_TRIANGLES, 74*3, GL_UNSIGNED_INT, 0);
+		D glDrawElements (GL_TRIANGLES, 74*3, GL_UNSIGNED_INT, 0);
 	}
 }
 
 wurfel_floor::~wurfel_floor (void)
 {
-	glDeleteProgram (shaderProgram[0]);
-	glDeleteProgram (shaderProgram[1]);
-	glDeleteBuffers(2, ebo);
-	glDeleteBuffers(2, vbo);
-	glDeleteVertexArrays(2, vao);
+	D glDeleteProgram (shaderProgram[0]);
+	D glDeleteProgram (shaderProgram[1]);
+	D glDeleteBuffers(2, ebo);
+	D glDeleteBuffers(2, vbo);
+	D glDeleteVertexArrays(2, vao);
 }

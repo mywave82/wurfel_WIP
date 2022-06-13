@@ -16,6 +16,7 @@
 #include <chrono>
 #include <stdio.h>
 
+#include "sdl2_opengl.hh"
 #include "cubic.hh"
 #include "dice.hh"
 #include "floor.hh"
@@ -23,6 +24,15 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef SDL_GLSYMBOL
+	struct DrawFunctions_t DrawFunctions;
+#define D  DrawFunctions.
+#define D2 &DrawFunctions
+
+#else
+#define D
+#define D2
+#endif
 	uint32_t WindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	int FullScreen = 0;
 	int windowWidth = 800;
@@ -39,7 +49,18 @@ int main(int argc, char *argv[])
 	float tray = 1.0f;
 	float traz = 1.0f;
 
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		fprintf (stderr, "SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
+		return 1;
+	}
+
+	if (SDL_GL_LoadLibrary	(NULL) < 0)
+	{
+		fprintf (stderr, "SDL_GL_LoadLibrary() failed: %s\n", SDL_GetError());
+		SDL_Quit();
+		return 1;
+	}
 
 	SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -51,6 +72,49 @@ int main(int argc, char *argv[])
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 	SDL_GL_SetSwapInterval (0); /* Disable VSYNC */
 
+#ifdef SDL_GLSYMBOL
+	DrawFunctions.glEnable                  = (GL_Enable_Func)                  SDL_GL_GetProcAddress("glEnable");
+	DrawFunctions.glDisable                 = (GL_Enable_Func)                  SDL_GL_GetProcAddress("glDisable");
+	DrawFunctions.glViewport                = (GL_Viewport_Func)                SDL_GL_GetProcAddress("glViewport");
+	DrawFunctions.glClearColor              = (GL_ClearColor_Func)              SDL_GL_GetProcAddress("glClearColor");
+	DrawFunctions.glClear                   = (GL_Clear_Func)                   SDL_GL_GetProcAddress("glClear");
+	DrawFunctions.glStencilFunc             = (GL_StencilFunc_Func)             SDL_GL_GetProcAddress("glStencilFunc");
+	DrawFunctions.glStencilMask             = (GL_StencilMask_Func)             SDL_GL_GetProcAddress("glStencilMask");
+	DrawFunctions.glStencilOp               = (GL_StencilOp_Func)               SDL_GL_GetProcAddress("glStencilOp");
+	DrawFunctions.glDepthMask               = (GL_DepthMask_Func)               SDL_GL_GetProcAddress("glDepthMask");
+	DrawFunctions.glGenVertexArrays         = (GL_GenVertexArrays_Func)         SDL_GL_GetProcAddress("glGenVertexArrays");
+	DrawFunctions.glBindVertexArray         = (GL_BindVertexArray_Func)         SDL_GL_GetProcAddress("glBindVertexArray");
+	DrawFunctions.glDeleteVertexArrays      = (GL_DeleteVertexArray_Func)       SDL_GL_GetProcAddress("glDeleteVertexArrays");
+	DrawFunctions.glGenBuffers              = (GL_GenBuffers_Func)              SDL_GL_GetProcAddress("glGenBuffers");
+	DrawFunctions.glDeleteBuffers           = (GL_DeleteBuffers_Func)           SDL_GL_GetProcAddress("glDeleteBuffers");
+	DrawFunctions.glBindBuffer              = (GL_BindBuffer_Func)              SDL_GL_GetProcAddress("glBindBuffer");
+	DrawFunctions.glBufferData              = (GL_BufferData_Func)              SDL_GL_GetProcAddress("glBufferData");
+	DrawFunctions.glCreateShader            = (GL_CreateShader_Func)            SDL_GL_GetProcAddress("glCreateShader");
+	DrawFunctions.glShaderSource            = (GL_ShaderSource_Func)            SDL_GL_GetProcAddress("glShaderSource");
+	DrawFunctions.glCompileShader           = (GL_CompileShader_Func)           SDL_GL_GetProcAddress("glCompileShader");
+	DrawFunctions.glGetShaderiv             = (GL_GetShaderiv_Func)             SDL_GL_GetProcAddress("glGetShaderiv");
+	DrawFunctions.glGetShaderInfoLog        = (GL_GetShaderInfoLog_Func)        SDL_GL_GetProcAddress("glGetShaderInfoLog");
+	DrawFunctions.glDeleteShader            = (GL_DeleteShader_Func)            SDL_GL_GetProcAddress("glDeleteShader");
+	DrawFunctions.glCreateProgram           = (GL_CreateProgram_Func)           SDL_GL_GetProcAddress("glCreateProgram");
+	DrawFunctions.glAttachShader            = (GL_AttachShader_Func)            SDL_GL_GetProcAddress("glAttachShader");
+	DrawFunctions.glLinkProgram             = (GL_LinkProgram_Func)             SDL_GL_GetProcAddress("glLinkProgram");
+	DrawFunctions.glUseProgram              = (GL_UseProgram_Func)              SDL_GL_GetProcAddress("glUseProgram");
+	DrawFunctions.glDeleteProgram           = (GL_DeleteProgram_Func)           SDL_GL_GetProcAddress("glDeleteProgram");
+	DrawFunctions.glBlendFunc               = (GL_BlendFunc_Func)               SDL_GL_GetProcAddress("glBlendFunc");
+	DrawFunctions.glEnableVertexAttribArray = (GL_EnableVertexAttribArray_Func) SDL_GL_GetProcAddress("glEnableVertexAttribArray");
+	DrawFunctions.glVertexAttribPointer     = (GL_VertexAttribPointer_Func)     SDL_GL_GetProcAddress("glVertexAttribPointer");
+	DrawFunctions.glBindFragDataLocation    = (GL_BindFragDataLocation_Func)    SDL_GL_GetProcAddress("glBindFragDataLocation");
+	DrawFunctions.glGetAttribLocation       = (GL_GetAttribLocation_Func)       SDL_GL_GetProcAddress("glGetAttribLocation");
+	DrawFunctions.glGetUniformLocation      = (GL_GetUniformLocation_Func)      SDL_GL_GetProcAddress("glGetUniformLocation");
+	DrawFunctions.glUniform1f               = (GL_Uniform1f_Func)               SDL_GL_GetProcAddress("glUniform1f");
+	DrawFunctions.glUniform3f               = (GL_Uniform3f_Func)               SDL_GL_GetProcAddress("glUniform3f");
+	DrawFunctions.glUniform1i               = (GL_Uniform1i_Func)               SDL_GL_GetProcAddress("glUniform1i");
+	DrawFunctions.glUniform3fv              = (GL_Uniform3fv_Func)              SDL_GL_GetProcAddress("glUniform3fv");
+	DrawFunctions.glUniformMatrix4fv        = (GL_UniformMatrix4fv_Func)        SDL_GL_GetProcAddress("glUniformMatrix4fv");
+	DrawFunctions.glFrontFace               = (GL_FrontFace_Func)               SDL_GL_GetProcAddress("glFrontFace");
+	DrawFunctions.glDrawElements            = (GL_DrawElements_Func)            SDL_GL_GetProcAddress("glDrawElements");
+#endif
+
 #ifndef SDL_GLEW
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -58,17 +122,17 @@ int main(int argc, char *argv[])
 	// We let SDL handle this
 #endif
 
-	wurfel_cubic *cubic = new wurfel_cubic();
-	wurfel_dice *dice = new wurfel_dice();
-	wurfel_floor *floor = new wurfel_floor();
-	wurfel_lightstar *lightstar = new wurfel_lightstar();
+	wurfel_cubic *cubic = new wurfel_cubic(D2);
+	wurfel_dice *dice = new wurfel_dice(D2);
+	wurfel_floor *floor = new wurfel_floor(D2);
+	wurfel_lightstar *lightstar = new wurfel_lightstar(D2);
 
 	auto t_start = std::chrono::high_resolution_clock::now();
 	auto t_now = t_start;
 
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	D glEnable(GL_DEPTH_TEST);
+	D glEnable(GL_CULL_FACE);
 
 	while (!quit)
 	{
@@ -87,7 +151,7 @@ int main(int argc, char *argv[])
 					{
 						windowWidth = event.window.data1;
 						windowHeight = event.window.data2;
-						glViewport(0, 0, windowWidth, windowHeight);
+						D glViewport(0, 0, windowWidth, windowHeight);
 					}
 					break;
 				case SDL_KEYUP:
@@ -133,8 +197,8 @@ int main(int argc, char *argv[])
 		}
 
 		// Clear the screen to black
-		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		D glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+		D glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Calculate transformation
 		if (!pause)
@@ -189,35 +253,35 @@ int main(int argc, char *argv[])
 		light2[2] = 0.5f;
 
 #if 1
-		glEnable(GL_STENCIL_TEST);
+		D glEnable(GL_STENCIL_TEST);
 
 		// Draw floor MASK
-		glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		glStencilMask(0xFF); // Write to stencil buffer
+		D glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
+		D glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		D glStencilMask(0xFF); // Write to stencil buffer
 
-		//glDisable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
+		//D glDisable(GL_DEPTH_TEST);
+		D glDepthMask(GL_FALSE);
 
-		//glDepthMask(GL_FALSE); // Don't write to depth buffer
-		glClear(GL_STENCIL_BUFFER_BIT); // Clear stencil buffer (0 by default)
+		//D glDepthMask(GL_FALSE); // Don't write to depth buffer
+		D glClear(GL_STENCIL_BUFFER_BIT); // Clear stencil buffer (0 by default)
 
 		floor->render (true, glm::value_ptr(proj), glm::value_ptr(view));
 
-		//glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
+		//D glEnable(GL_DEPTH_TEST);
+		D glDepthMask(GL_TRUE);
 
 		// Draw cube reflection
-		glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
-		glStencilMask(0x00); // Don't write anything to stencil buffer
-		//glDepthMask(GL_TRUE); // Write to depth buffer
+		D glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
+		D glStencilMask(0x00); // Don't write anything to stencil buffer
+		//D glDepthMask(GL_TRUE); // Write to depth buffer
 
 		cubic->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, light2);
 		dice->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, timeCubeRotation / 6.0f /*scale, trax, tray, traz*/);
 		lightstar->render (true, glm::value_ptr(proj), glm::value_ptr(view), light1, camera, timeClockRotation);
 
-		glDisable(GL_STENCIL_TEST);
-		//glClear(GL_DEPTH_BUFFER_BIT);
+		D glDisable(GL_STENCIL_TEST);
+		//D glClear(GL_DEPTH_BUFFER_BIT);
 #endif
 
 		floor->render (false, glm::value_ptr(proj), glm::value_ptr(view));
@@ -235,6 +299,9 @@ int main(int argc, char *argv[])
 	delete lightstar; lightstar = 0;
 
 	SDL_GL_DeleteContext(context);
+
+	SDL_GL_UnloadLibrary();
+
 	SDL_Quit();
 	return 0;
 }

@@ -15,7 +15,11 @@ class wurfel_cubic
 	};
 
 	public:
+#ifdef SDL_GLSYMBOL
+		wurfel_cubic (const struct DrawFunctions_t *DrawFunctions);
+#else
 		wurfel_cubic (void);
+#endif
 		~wurfel_cubic (void);
 
 		void render (bool mirror, float const *proj, float const *view, float const *light1, float const *light2);
@@ -28,6 +32,9 @@ class wurfel_cubic
 
 		float measure_width(const struct vertix_t *v, const int count);
 
+#ifdef SDL_GLSYMBOL
+		const struct DrawFunctions_t *DrawFunctions;
+#endif
 		GLuint cubic_vao; // Vertex Array Objects (VAO)
 		GLuint cubic_vbo[4]; // Vertex Buffer Object (VBO) - C U B I
 		GLuint cubic_ebo[4]; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them

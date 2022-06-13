@@ -13,7 +13,11 @@ class wurfel_floor
 	};
 
 	public:
+#ifdef SDL_GLSYMBOL
+		wurfel_floor (const struct DrawFunctions_t *DrawFunctions);
+#else
 		wurfel_floor (void);
+#endif
 		~wurfel_floor (void);
 
 		void render (bool mirror, float const *proj, float const *view);
@@ -27,6 +31,9 @@ class wurfel_floor
 		static const struct vertix_t vertices2[40];
 		static const struct element_t elements2[74];
 
+#ifdef SDL_GLSYMBOL
+		const struct DrawFunctions_t *DrawFunctions;
+#endif
 
 		GLuint vao[2]; // Vertex Array Objects (VAO)
 		GLuint vbo[2]; // Vertex Buffer Object (VBO):

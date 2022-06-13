@@ -7,13 +7,15 @@ SDLLIBS=`pkg-config --libs sdl2`
 ifeq (NOT_SDL,1)
 GLEWCFLAGS=`pkg-config --cflags glew`
 GLEWLIBS=`pkg-config --libs glew`
+OPENGLCFLAGS=`pkg-config --cflags opengl`
+OPENGLLIBS=`pkg-config --libs opengl`
 else
 GLEWCFLAGS=-DSDL_GLEW=1
 GLEWLIBS=
+OPENGLCFLAGS=-DSDL_GLSYMBOL=1
+OPENGLLIBS=
 endif
 
-OPENGLCFLAGS=`pkg-config --cflags opengl`
-OPENGLLIBS=`pkg-config --libs opengl`
 
 all: sdl2_opengl
 
@@ -41,20 +43,22 @@ sdl2_opengl: \
 
 sdl2_opengl.o: \
 	sdl2_opengl.cpp \
+	sdl2_opengl.hh \
 	cubic.hh \
 	dice.hh \
 	floor.hh \
 	lightstar.hh
-	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENGLCFLAGS) $< -o $@ -c
 
 cubic.o: \
 	cubic.cpp \
+	sdl2_opengl.hh \
 	cubic.hh \
 	cubic-data.cpp \
 	cubic-vert.cpp \
 	cubic-geom.cpp \
 	cubic-frag.cpp
-	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENGLCFLAGS) $< -o $@ -c
 
 dice.o: \
 	dice.cpp \
@@ -63,24 +67,26 @@ dice.o: \
 	dice-vert.cpp \
 	dice-geom.cpp \
 	dice-frag.cpp
-	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENGLCFLAGS) $< -o $@ -c
 
 floor.o: \
 	floor.cpp \
+	sdl2_opengl.hh \
 	floor-vert.cpp \
 	floor-frag.cpp \
 	border-vert.cpp \
 	border-frag.cpp \
 	floor.hh
-	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENGLCFLAGS) $< -o $@ -c
 
 lightstar.o: \
 	lightstar.cpp \
+	sdl2_opengl.hh \
 	lightstar.hh \
 	lightstar-vert.cpp \
 	lightstar-geom.cpp \
 	lightstar-frag.cpp
-	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENFLCFLAGS) $< -o $@ -c
+	$(CXX) $(CXXFLAGS) $(SDLCFLAGS) $(GLEWCFLAGS) $(OPENGLCFLAGS) $< -o $@ -c
 
 cubic-data.cpp: \
 	cubic-data-generator

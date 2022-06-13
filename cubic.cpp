@@ -6,7 +6,11 @@
 #define GL_GLEXT_PROTOTYPES 1
 #endif
 
+#ifdef SDL_GLSYMBOL
+#include "sdl2_opengl.hh"
+#else
 #include <SDL_opengl.h>
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,6 +28,12 @@
 
 #include "cubic-data.cpp" /* vertices w/normals and triangles */
 
+#ifdef SDL_GLSYMBOL
+#define D this->DrawFunctions->
+#else
+#define D
+#endif
+
 float wurfel_cubic::measure_width(const struct vertix_t *v, const int count)
 {
 	float minx =  10.0f;
@@ -36,11 +46,19 @@ float wurfel_cubic::measure_width(const struct vertix_t *v, const int count)
 	return maxx - minx;
 }
 
-wurfel_cubic::wurfel_cubic (void)
+#ifdef SDL_GLSYMBOL
+wurfel_cubic::wurfel_cubic (const struct DrawFunctions_t *DrawFunctions)
+#else
+wurfel_cubic::wurfel_cubic ()
+#endif
 {
 	float width[5];
 
 	float totalwidth;
+
+#ifdef SDL_GLSYMBOL
+	this->DrawFunctions = DrawFunctions;
+#endif
 
 	width[0] = measure_width (vertices_C, sizeof (vertices_C) / sizeof (vertices_C[0]));
 	width[1] = measure_width (vertices_U, sizeof (vertices_U) / sizeof (vertices_U[0]));
@@ -71,95 +89,95 @@ wurfel_cubic::wurfel_cubic (void)
 	translate[3][2] = 0.0;
 	translate[4][2] = 0.0;
 
-	glGenVertexArrays (1, &cubic_vao);
-	glBindVertexArray (cubic_vao);
+	D glGenVertexArrays (1, &cubic_vao);
+	D glBindVertexArray (cubic_vao);
 
-	glGenBuffers (4, cubic_vbo);
+	D glGenBuffers (4, cubic_vbo);
 
-	glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[0]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_C), vertices_C, GL_STATIC_DRAW);
-	glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[1]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_U), vertices_U, GL_STATIC_DRAW);
-	glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[2]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_B), vertices_B, GL_STATIC_DRAW);
-	glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[3]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_I), vertices_I, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[0]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_C), vertices_C, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[1]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_U), vertices_U, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[2]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_B), vertices_B, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[3]);
+	D glBufferData (GL_ARRAY_BUFFER, sizeof(vertices_I), vertices_I, GL_STATIC_DRAW);
 
-	glGenBuffers (4, cubic_ebo);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[0]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_C), elements_C, GL_STATIC_DRAW);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[1]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_U), elements_U, GL_STATIC_DRAW);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[2]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_B), elements_B, GL_STATIC_DRAW);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[3]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_I), elements_I, GL_STATIC_DRAW);
+	D glGenBuffers (4, cubic_ebo);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[0]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_C), elements_C, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[1]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_U), elements_U, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[2]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_B), elements_B, GL_STATIC_DRAW);
+	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[3]);
+	D glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(elements_I), elements_I, GL_STATIC_DRAW);
 
-	GLuint vertexShader = glCreateShader (GL_VERTEX_SHADER);
-	glShaderSource (vertexShader, 1, &cubic_vertexSource, NULL);
-	glCompileShader (vertexShader);
+	GLuint vertexShader = D glCreateShader (GL_VERTEX_SHADER);
+	D glShaderSource (vertexShader, 1, &cubic_vertexSource, NULL);
+	D glCompileShader (vertexShader);
 	GLint status;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	D glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
 		printf ("Failed to compile cubic_vertexSource:\n%s\n", buffer);
 	}
 
-	GLuint geometryShader = glCreateShader (GL_GEOMETRY_SHADER);
-	glShaderSource (geometryShader, 1, &cubic_geometrySource, NULL);
-	glCompileShader (geometryShader);
-	glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &status);
+	GLuint geometryShader = D glCreateShader (GL_GEOMETRY_SHADER);
+	D glShaderSource (geometryShader, 1, &cubic_geometrySource, NULL);
+	D glCompileShader (geometryShader);
+	D glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(geometryShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(geometryShader, 512, NULL, buffer);
 		printf ("Failed to compile cubic_geometrySource:\n%s\n", buffer);
 	}
 
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource (fragmentShader, 1, &cubic_fragmentSource, NULL);
-	glCompileShader (fragmentShader);
-	glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
+	GLuint fragmentShader = D glCreateShader(GL_FRAGMENT_SHADER);
+	D glShaderSource (fragmentShader, 1, &cubic_fragmentSource, NULL);
+	D glCompileShader (fragmentShader);
+	D glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, &status);
 	if (status == false)
 	{
 		char buffer[512];
-		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+		D glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
 		printf ("Failed to compile cubic_fragmentSource:\n%s\n", buffer);
 	}
 
-	cubic_shaderProgram = glCreateProgram ();
-	glAttachShader (cubic_shaderProgram, vertexShader);
-	glAttachShader (cubic_shaderProgram, geometryShader);
-	glAttachShader (cubic_shaderProgram, fragmentShader);
+	cubic_shaderProgram = D glCreateProgram ();
+	D glAttachShader (cubic_shaderProgram, vertexShader);
+	D glAttachShader (cubic_shaderProgram, geometryShader);
+	D glAttachShader (cubic_shaderProgram, fragmentShader);
 
-	glBindFragDataLocation(cubic_shaderProgram, 0, "outColor");
-	glLinkProgram (cubic_shaderProgram);
-	glDeleteShader (vertexShader); // The finished program is not affected by this
-	glDeleteShader (geometryShader);
-	glDeleteShader (fragmentShader);
+	D glBindFragDataLocation(cubic_shaderProgram, 0, "outColor");
+	D glLinkProgram (cubic_shaderProgram);
+	D glDeleteShader (vertexShader); // The finished program is not affected by this
+	D glDeleteShader (geometryShader);
+	D glDeleteShader (fragmentShader);
 
-	glUseProgram (cubic_shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
+	D glUseProgram (cubic_shaderProgram); /* program must be the activated once before glGetAttribLocation() and friends work */
 
-	attrib_position = glGetAttribLocation (cubic_shaderProgram, "position"); /* local position inside the model */
-	attrib_vertexNormal    = glGetAttribLocation (cubic_shaderProgram,    "vertexNormal");
-	cubic_uniModel = glGetUniformLocation (cubic_shaderProgram, "model"); /* model location in the world */
-	cubic_uniView  = glGetUniformLocation (cubic_shaderProgram, "view");   /* camera angle + position */
-	cubic_uniProj  = glGetUniformLocation (cubic_shaderProgram, "proj");   /* project perspective */
-	cubic_matrix  = glGetUniformLocation (cubic_shaderProgram, "matrix");   /* project perspective */
+	attrib_position = D glGetAttribLocation (cubic_shaderProgram, "position"); /* local position inside the model */
+	attrib_vertexNormal    = D glGetAttribLocation (cubic_shaderProgram,    "vertexNormal");
+	cubic_uniModel = D glGetUniformLocation (cubic_shaderProgram, "model"); /* model location in the world */
+	cubic_uniView  = D glGetUniformLocation (cubic_shaderProgram, "view");   /* camera angle + position */
+	cubic_uniProj  = D glGetUniformLocation (cubic_shaderProgram, "proj");   /* project perspective */
+	cubic_matrix   = D glGetUniformLocation (cubic_shaderProgram, "matrix");   /* project perspective */
 
-	uniform_ambient    = glGetUniformLocation (cubic_shaderProgram, "ambient");
-	uniform_light1Pos   = glGetUniformLocation (cubic_shaderProgram, "light1Pos");
-	uniform_light2Pos   = glGetUniformLocation (cubic_shaderProgram, "light2Pos");
-	uniform_light1Color = glGetUniformLocation (cubic_shaderProgram, "light1Color");
-	uniform_light2Color = glGetUniformLocation (cubic_shaderProgram, "light2Color");
+	uniform_ambient     = D glGetUniformLocation (cubic_shaderProgram, "ambient");
+	uniform_light1Pos   = D glGetUniformLocation (cubic_shaderProgram, "light1Pos");
+	uniform_light2Pos   = D glGetUniformLocation (cubic_shaderProgram, "light2Pos");
+	uniform_light1Color = D glGetUniformLocation (cubic_shaderProgram, "light1Color");
+	uniform_light2Color = D glGetUniformLocation (cubic_shaderProgram, "light2Color");
 }
 
 void wurfel_cubic::render (bool mirror, float const *proj, float const *view, float const *light1, float const *light2)
 {
-	glBindVertexArray (cubic_vao);
-	glUseProgram (cubic_shaderProgram);
+	D glBindVertexArray (cubic_vao);
+	D glUseProgram (cubic_shaderProgram);
 
 	{
 		float ambient[3] = {0.2f, 0.2f, 0.2f};
@@ -167,24 +185,24 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 		float light1Color[3] = {0.6f, 1.0f, 1.0f};
 		float light2Color[3] = {2.0f, 0.0f, 0.0f};
 
-		glUniform3fv (uniform_ambient,    1, ambient);
-		glUniform3fv (uniform_light1Pos,   1, light1);
-		glUniform3fv (uniform_light2Pos,   1, light2);
-		glUniform3fv (uniform_light1Color, 1, light1Color);
-		glUniform3fv (uniform_light2Color, 1, light2Color);
+		D glUniform3fv (uniform_ambient,    1, ambient);
+		D glUniform3fv (uniform_light1Pos,   1, light1);
+		D glUniform3fv (uniform_light2Pos,   1, light2);
+		D glUniform3fv (uniform_light1Color, 1, light1Color);
+		D glUniform3fv (uniform_light2Color, 1, light2Color);
 
-		glUniformMatrix4fv(cubic_uniProj, 1, GL_FALSE, proj);
-		glUniformMatrix4fv(cubic_uniView, 1, GL_FALSE, view);
+		D glUniformMatrix4fv(cubic_uniProj, 1, GL_FALSE, proj);
+		D glUniformMatrix4fv(cubic_uniView, 1, GL_FALSE, view);
 	}		
 
 
 	for (int letter = 0; letter < 5; letter++)
 	{
-		glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[letter%4]);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[letter%4]);
+		D glBindBuffer (GL_ARRAY_BUFFER, cubic_vbo[letter%4]);
+		D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cubic_ebo[letter%4]);
 	
-		glEnableVertexAttribArray (attrib_position);
-		glVertexAttribPointer (
+		D glEnableVertexAttribArray (attrib_position);
+		D glVertexAttribPointer (
 			attrib_position,
 			3,
 			GL_FLOAT,
@@ -193,8 +211,8 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 			(const void *)offsetof (struct wurfel_cubic::vertix_t, position)
 		);
 
-		glEnableVertexAttribArray (attrib_vertexNormal);
-		glVertexAttribPointer (
+		D glEnableVertexAttribArray (attrib_vertexNormal);
+		D glVertexAttribPointer (
 			attrib_vertexNormal,
 			3,
 			GL_FLOAT,
@@ -207,7 +225,7 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 		glm::mat4 matrix = glm::mat4(1.0f);
 		//matrix = glm::scale (matrix, glm::vec3(scale, scale, scale));
 		matrix = glm::translate (matrix, glm::vec3((float)letter, 0.0f, 0.0f));
-		glUniformMatrix4fv(cubic_matrix, 1, GL_FALSE, glm::value_ptr(matrix));
+		D glUniformMatrix4fv(cubic_matrix, 1, GL_FALSE, glm::value_ptr(matrix));
 
 
 		glm::mat4 model = glm::mat4(1.0f);
@@ -263,36 +281,36 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 #endif
 
 
-		glUniformMatrix4fv(cubic_uniModel, 1, GL_FALSE, glm::value_ptr(model));
+		D glUniformMatrix4fv(cubic_uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		if (mirror == true)
 		{
-			glFrontFace (GL_CW);
+			D glFrontFace (GL_CW);
 		}
 
 		switch (letter)
 		{
 			case 0: case 4:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_C)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
+				D glDrawElements (GL_TRIANGLES, sizeof (elements_C)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 1:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_U)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
+				D glDrawElements (GL_TRIANGLES, sizeof (elements_U)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 2:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_B)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
+				D glDrawElements (GL_TRIANGLES, sizeof (elements_B)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 			case 3:
-				glDrawElements (GL_TRIANGLES, sizeof (elements_I)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
+				D glDrawElements (GL_TRIANGLES, sizeof (elements_I)/(sizeof(GLuint)), GL_UNSIGNED_INT, 0); break;
 		}
 
 		if (mirror == true)
 		{
-			glFrontFace (GL_CCW);
+			D glFrontFace (GL_CCW);
 		}
 	}
 }
 
 wurfel_cubic::~wurfel_cubic (void)
 {
-	glDeleteProgram (cubic_shaderProgram);
-	glDeleteBuffers(4, cubic_ebo);
-	glDeleteBuffers(4, cubic_vbo);
-	glDeleteVertexArrays(1, &cubic_vao);
+	D glDeleteProgram (cubic_shaderProgram);
+	D glDeleteBuffers(4, cubic_ebo);
+	D glDeleteBuffers(4, cubic_vbo);
+	D glDeleteVertexArrays(1, &cubic_vao);
 }
