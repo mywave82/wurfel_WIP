@@ -8,6 +8,10 @@ uniform vec3 ambient;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 
+uniform vec4 hilight1;
+uniform vec4 hilight2;
+uniform vec4 hilight3;
+
 // Classic Perlin 3D Noise
 // by Stefan Gustavson
 
@@ -134,9 +138,9 @@ void main()
       const int roughness = 6;     // noisiness of veins (#octaves in turbulence)
 
 	float n = amplitude * turbulence (Position.xyz, roughness);
-	float stripe1 = sin(       Position.x * 2.34 + Position.y * 3.45 + Position.z * 4.56 + n);
-	float stripe2 = sin(4.49 + Position.x * 6.54 + Position.y * 5.43 + Position.z * 4.32 + n);
-	float stripe3 = sin(5.89 + Position.x * 4.00 + Position.y * 4.00 + Position.z * 4.00 + n);
+	float stripe1 = sin(hilight1.w + Position.x * hilight1.x + Position.y * hilight1.y + Position.z * hilight1.z + n);
+	float stripe2 = sin(hilight2.w + Position.x * hilight2.x + Position.y * hilight2.y + Position.z * hilight2.z + n);
+	float stripe3 = sin(hilight3.w + Position.x * hilight3.x + Position.y * hilight3.y + Position.z * hilight3.z + n);
 	float stripes = clamp(min(min(stripe1, stripe2), stripe3), -1.0, 1.0);
 	vec3 highlights = marble_color(stripes);
 

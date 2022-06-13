@@ -43,6 +43,7 @@ typedef void   (APIENTRY * GL_Uniform1f_Func)               (GLint location, GLf
 typedef void   (APIENTRY * GL_Uniform3f_Func)               (GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
 typedef void   (APIENTRY * GL_Uniform1i_Func)               (GLint location, GLint v0);
 typedef void   (APIENTRY * GL_Uniform3fv_Func)              (GLint location, GLsizei count, const GLfloat *value);
+typedef void   (APIENTRY * GL_Uniform4fv_Func)              (GLint location, GLsizei count, const GLfloat *value);
 typedef void   (APIENTRY * GL_UniformMatrix4fv_Func)        (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 typedef void   (APIENTRY * GL_FrontFace_Func)               (GLenum mode);
 typedef void   (APIENTRY * GL_DrawElements_Func)            (GLenum mode, GLsizei count, GLenum type, const void *indices);
@@ -86,6 +87,7 @@ struct DrawFunctions_t
 	GL_Uniform3f_Func               glUniform3f;
 	GL_Uniform1i_Func               glUniform1i;
 	GL_Uniform3fv_Func              glUniform3fv;
+	GL_Uniform4fv_Func              glUniform4fv;
 	GL_UniformMatrix4fv_Func        glUniformMatrix4fv;
 	GL_FrontFace_Func               glFrontFace;
 	GL_DrawElements_Func            glDrawElements;

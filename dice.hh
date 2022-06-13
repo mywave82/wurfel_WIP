@@ -22,6 +22,8 @@ class wurfel_dice
 #endif
 		~wurfel_dice (void);
 
+		void elapse (float time);
+
 		void render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/);
 
 	private:
@@ -31,6 +33,7 @@ class wurfel_dice
 #ifdef SDL_GLSYMBOL
 		const struct DrawFunctions_t *DrawFunctions;
 #endif
+		float timer[3][4];
 		GLuint vao; // Vertex Array Objects (VAO)
 		GLuint vbo; // Vertex Buffer Object (VBO):
 		GLuint ebo; // Element Buffer Object - indexes vertices to basic elements, so we can re-use them
@@ -44,4 +47,7 @@ class wurfel_dice
 		GLint uniform_ambient;
 		GLint uniform_lightPos;
 		GLint uniform_lightColor;
+		GLint uniform_hilight1;
+		GLint uniform_hilight2;
+		GLint uniform_hilight3;
 };

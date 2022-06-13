@@ -185,7 +185,7 @@ void wurfel_cubic::render (bool mirror, float const *proj, float const *view, fl
 		float light1Color[3] = {0.6f, 1.0f, 1.0f};
 		float light2Color[3] = {2.0f, 0.0f, 0.0f};
 
-		D glUniform3fv (uniform_ambient,    1, ambient);
+		D glUniform3fv (uniform_ambient,     1, ambient);
 		D glUniform3fv (uniform_light1Pos,   1, light1);
 		D glUniform3fv (uniform_light2Pos,   1, light2);
 		D glUniform3fv (uniform_light1Color, 1, light1Color);

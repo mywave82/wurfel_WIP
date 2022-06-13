@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
 	DrawFunctions.glUniform3f               = (GL_Uniform3f_Func)               SDL_GL_GetProcAddress("glUniform3f");
 	DrawFunctions.glUniform1i               = (GL_Uniform1i_Func)               SDL_GL_GetProcAddress("glUniform1i");
 	DrawFunctions.glUniform3fv              = (GL_Uniform3fv_Func)              SDL_GL_GetProcAddress("glUniform3fv");
+	DrawFunctions.glUniform4fv              = (GL_Uniform4fv_Func)              SDL_GL_GetProcAddress("glUniform4fv");
 	DrawFunctions.glUniformMatrix4fv        = (GL_UniformMatrix4fv_Func)        SDL_GL_GetProcAddress("glUniformMatrix4fv");
 	DrawFunctions.glFrontFace               = (GL_FrontFace_Func)               SDL_GL_GetProcAddress("glFrontFace");
 	DrawFunctions.glDrawElements            = (GL_DrawElements_Func)            SDL_GL_GetProcAddress("glDrawElements");
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
 
 	auto t_start = std::chrono::high_resolution_clock::now();
 	auto t_now = t_start;
-
+	auto t_previous = t_start;
 
 	D glEnable(GL_DEPTH_TEST);
 	D glEnable(GL_CULL_FACE);
@@ -220,6 +221,9 @@ int main(int argc, char *argv[])
 		float timeClockRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 60000000000ll).count(); /* resolution is sixty second */
 
 		float timeCubeRotation = std::chrono::duration_cast<std::chrono::duration<float>>((t_now - t_start) % 6000000000ll).count(); /* resolution is six second */
+
+		dice->elapse (std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_previous).count());
+		t_previous = t_now;
 
 		float camera[3] =
 		{
