@@ -119,20 +119,20 @@ wurfel_dice::wurfel_dice ()
 
 void wurfel_dice::elapse (float time)
 {
-	timer[0][0] = fmodf (timer[0][0] + time * 0.0134f, (float)(2.0f * M_PI));
+	timer[0][0] = fmodf (timer[0][0] + time * 0.4134f, (float)(2.0f * M_PI));
 	timer[0][1] = fmodf (timer[0][1] + time * 0.0241f, (float)(2.0f * M_PI));
 	timer[0][2] = fmodf (timer[0][2] + time * 0.0141f, (float)(2.0f * M_PI));
 	timer[0][3] = fmodf (timer[0][3] + time * 0.0491f, (float)(2.0f * M_PI));
 
 	timer[1][0] = fmodf (timer[1][0] + time * 0.0142f, (float)(2.0f * M_PI));
 	timer[1][1] = fmodf (timer[1][1] + time * 0.0584f, (float)(2.0f * M_PI));
-	timer[1][2] = fmodf (timer[1][2] + time * 0.0101f, (float)(2.0f * M_PI));
+	timer[1][2] = fmodf (timer[1][2] + time * 0.2101f, (float)(2.0f * M_PI));
 	timer[1][3] = fmodf (timer[1][3] + time * 0.0631f, (float)(2.0f * M_PI));
 
 	timer[2][0] = fmodf (timer[2][0] + time * 0.0742f, (float)(2.0f * M_PI));
-	timer[2][1] = fmodf (timer[2][1] + time * 0.0864f, (float)(2.0f * M_PI));
+	timer[2][1] = fmodf (timer[2][1] + time * 0.1864f, (float)(2.0f * M_PI));
 	timer[2][2] = fmodf (timer[2][2] + time * 0.0144f, (float)(2.0f * M_PI));
-	timer[2][3] = fmodf (timer[2][3] + time * 0.0125f, (float)(2.0f * M_PI));
+	timer[2][3] = fmodf (timer[2][3] + time * 0.0525f, (float)(2.0f * M_PI));
 }
 
 void wurfel_dice::render (bool mirror, float const *proj, float const *view, float const *light1, float spin/*, float scale, float trax, float tray, float traz*/)
@@ -224,9 +224,9 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 		//float lightPos[3] = {5.0f, 5.0f, 5.0f};
 		float lightColor[3] = {0.6f, 0.9f, 0.9f};
 
-		float hilight1[4] = {2.34f  + 20.0f*sin(timer[0][0]),  3.45f + 10.0f*sin(timer[0][1]), -4.56f + 10.0f*sin(timer[0][2]),  0.00f + 10.0f*sin(timer[0][3])};
-		float hilight2[4] = {6.54f  + 10.0f*sin(timer[1][0]), -5.43f + 20.0f*sin(timer[1][1]),  4.32f + 10.0f*sin(timer[1][2]), -4.49f + 10.0f*sin(timer[1][3])};
-		float hilight3[4] = {-4.00f + 10.0f*sin(timer[2][0]),  4.00f + 10.0f*sin(timer[2][1]),  4.00f + 20.0f*sin(timer[2][2]),  5.89f + 10.0f*sin(timer[2][3])};
+		float hilight1[4] = {2.34f  + 20.0f*sin(timer[0][0]),  3.45f + 15.0f*sin(timer[0][1]), -4.56f + 15.0f*sin(timer[0][2]),  0.00f + 10.0f*sin(timer[0][3])};
+		float hilight2[4] = {6.54f  + 15.0f*sin(timer[1][0]), -5.43f + 20.0f*sin(timer[1][1]),  4.32f + 15.0f*sin(timer[1][2]), -4.49f + 10.0f*sin(timer[1][3])};
+		float hilight3[4] = {-4.00f + 15.0f*sin(timer[2][0]),  4.00f + 15.0f*sin(timer[2][1]),  4.00f + 20.0f*sin(timer[2][2]),  5.89f + 10.0f*sin(timer[2][3])};
 
 		D glUniform3fv (uniform_ambient,    1, ambient);
 		D glUniform3fv (uniform_lightPos,   1, /*lightPos*/ light1);

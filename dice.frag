@@ -134,7 +134,7 @@ vec3 marble_color (float x)
 
 void main()
 {
-      float amplitude = 4.0;
+      float amplitude = 10.0;
       const int roughness = 6;     // noisiness of veins (#octaves in turbulence)
 
 	float n = amplitude * turbulence (Position.xyz, roughness);
