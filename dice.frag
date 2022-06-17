@@ -12,82 +12,76 @@ uniform vec4 hilight1;
 uniform vec4 hilight2;
 uniform vec4 hilight3;
 
-// Classic Perlin 3D Noise
-// by Stefan Gustavson
 
-vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
 
-float cnoise(vec3 P)
-{
-  vec3 Pi0 = floor(P); // Integer part for indexing
-  vec3 Pi1 = Pi0 + vec3(1.0); // Integer part + 1
-  Pi0 = mod(Pi0, 289.0);
-  Pi1 = mod(Pi1, 289.0);
-  vec3 Pf0 = fract(P); // Fractional part for interpolation
-  vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
-  vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
-  vec4 iy = vec4(Pi0.yy, Pi1.yy);
-  vec4 iz0 = Pi0.zzzz;
-  vec4 iz1 = Pi1.zzzz;
+// psrdnoise (c) Stefan Gustavson and Ian McEwan,
+// ver. 2021-12-02, published under the MIT license:
+// https://github.com/stegu/psrdnoise/
 
-  vec4 ixy = permute(permute(ix) + iy);
-  vec4 ixy0 = permute(ixy + iz0);
-  vec4 ixy1 = permute(ixy + iz1);
-
-  vec4 gx0 = ixy0 / 7.0;
-  vec4 gy0 = fract(floor(gx0) / 7.0) - 0.5;
-  gx0 = fract(gx0);
-  vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
-  vec4 sz0 = step(gz0, vec4(0.0));
-  gx0 -= sz0 * (step(0.0, gx0) - 0.5);
-  gy0 -= sz0 * (step(0.0, gy0) - 0.5);
-
-  vec4 gx1 = ixy1 / 7.0;
-  vec4 gy1 = fract(floor(gx1) / 7.0) - 0.5;
-  gx1 = fract(gx1);
-  vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
-  vec4 sz1 = step(gz1, vec4(0.0));
-  gx1 -= sz1 * (step(0.0, gx1) - 0.5);
-  gy1 -= sz1 * (step(0.0, gy1) - 0.5);
-
-  vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
-  vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
-  vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
-  vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
-  vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
-  vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
-  vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
-  vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
-
-  vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
-  g000 *= norm0.x;
-  g010 *= norm0.y;
-  g100 *= norm0.z;
-  g110 *= norm0.w;
-  vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
-  g001 *= norm1.x;
-  g011 *= norm1.y;
-  g101 *= norm1.z;
-  g111 *= norm1.w;
-
-  float n000 = dot(g000, Pf0);
-  float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
-  float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
-  float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
-  float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
-  float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
-  float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
-  float n111 = dot(g111, Pf1);
-
-  vec3 fade_xyz = fade(Pf0);
-  vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
-  vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
-  return 2.2 * n_xyz;
+vec4 permute(vec4 i) {
+	vec4 im = mod(i, 289.0);
+	return mod(((im*34.0)+10.0)*im, 289.0);
 }
 
+float psrdnoise(vec3 x, vec3 period, float alpha, out vec3 gradient)
+{
+	const mat3 M = mat3(0.0, 1.0, 1.0, 1.0, 0.0, 1.0,  1.0, 1.0, 0.0);
+	const mat3 Mi = mat3(-0.5, 0.5, 0.5, 0.5,-0.5, 0.5, 0.5, 0.5,-0.5);
+	vec3 uvw = M * x;
+	vec3 i0 = floor(uvw), f0 = fract(uvw);
+	vec3 g_ = step(f0.xyx, f0.yzz), l_ = 1.0 - g_;
+	vec3 g = vec3(l_.z, g_.xy), l = vec3(l_.xy, g_.z);
+	vec3 o1 = min( g, l ), o2 = max( g, l );
+	vec3 i1 = i0 + o1, i2 = i0 + o2, i3 = i0 + vec3(1.0);
+	vec3 v0 = Mi * i0, v1 = Mi * i1, v2 = Mi * i2, v3 = Mi * i3;
+	vec3 x0 = x - v0, x1 = x - v1, x2 = x - v2, x3 = x - v3;
+	if(any(greaterThan(period, vec3(0.0)))) {
+		vec4 vx = vec4(v0.x, v1.x, v2.x, v3.x);
+		vec4 vy = vec4(v0.y, v1.y, v2.y, v3.y);
+		vec4 vz = vec4(v0.z, v1.z, v2.z, v3.z);
+		if(period.x > 0.0) vx = mod(vx, period.x);
+		if(period.y > 0.0) vy = mod(vy, period.y);
+		if(period.z > 0.0) vz = mod(vz, period.z);
+		i0 = floor(M * vec3(vx.x, vy.x, vz.x) + 0.5);
+		i1 = floor(M * vec3(vx.y, vy.y, vz.y) + 0.5);
+		i2 = floor(M * vec3(vx.z, vy.z, vz.z) + 0.5);
+		i3 = floor(M * vec3(vx.w, vy.w, vz.w) + 0.5);
+	}
+	vec4 hash = permute( permute( permute(
+			vec4(i0.z, i1.z, i2.z, i3.z ))
+			+ vec4(i0.y, i1.y, i2.y, i3.y ))
+			+ vec4(i0.x, i1.x, i2.x, i3.x ));
+	vec4 theta = hash * 3.883222077;
+	vec4 sz = hash * -0.006920415 + 0.996539792;
+	vec4 psi = hash * 0.108705628;
+	vec4 Ct = cos(theta), St = sin(theta);
+	vec4 sz_prime = sqrt( 1.0 - sz*sz );
+	vec4 gx, gy, gz;
+	if(alpha != 0.0) {
+		vec4 px = Ct * sz_prime, py = St * sz_prime, pz = sz;
+		vec4 Sp = sin(psi), Cp = cos(psi), Ctp = St*Sp - Ct*Cp;
+		vec4 qx = mix( Ctp*St, Sp, sz), qy = mix(-Ctp*Ct, Cp, sz);
+		vec4 qz = -(py*Cp + px*Sp);
+		vec4 Sa = vec4(sin(alpha)), Ca = vec4(cos(alpha));
+		gx = Ca*px + Sa*qx; gy = Ca*py + Sa*qy; gz = Ca*pz + Sa*qz;
+	}
+	else {
+		gx = Ct * sz_prime; gy = St * sz_prime; gz = sz;
+	}
+	vec3 g0 = vec3(gx.x, gy.x, gz.x), g1 = vec3(gx.y, gy.y, gz.y);
+	vec3 g2 = vec3(gx.z, gy.z, gz.z), g3 = vec3(gx.w, gy.w, gz.w);
+	vec4 w = 0.5-vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3));
+	w = max(w, 0.0); vec4 w2 = w * w, w3 = w2 * w;
+	vec4 gdotx = vec4(dot(g0,x0), dot(g1,x1), dot(g2,x2), dot(g3,x3));
+	float n = dot(w3, gdotx);
+	vec4 dw = -6.0 * w2 * gdotx;
+	vec3 dn0 = w3.x * g0 + dw.x * x0;
+	vec3 dn1 = w3.y * g1 + dw.y * x1;
+	vec3 dn2 = w3.z * g2 + dw.z * x2;
+	vec3 dn3 = w3.w * g3 + dw.w * x3;
+	gradient = 39.5 * (dn0 + dn1 + dn2 + dn3);
+	return 39.5 * n;
+}
 
 float turbulence (vec3 P, int numFreq)
 {
@@ -95,14 +89,15 @@ float turbulence (vec3 P, int numFreq)
 	float freq = 1.0;
 	for (int i=0; i<numFreq; i++)
 	{
-		val += abs (cnoise (P*freq) / freq);
+		vec3 grad;
+		val += abs(psrdnoise (P*freq, vec3(2.0,2.0,2.0), 0.0, grad) / freq);
 		freq *= 2.07;
 	}
 	return val;
 }
 
 
-#define OCTAVES 8
+#define OCTAVES 2
 float fbm (in vec3 st)
 {
     // Initial values
@@ -112,12 +107,15 @@ float fbm (in vec3 st)
     //
     // Loop of octaves
     for (int i = 0; i < OCTAVES; i++) {
-        value += amplitude * cnoise(st);
+	vec3 grad;
+	float noise = psrdnoise (st, vec3(2.0,2.0,2.0), 0.0, grad);
+        value += amplitude * noise;
         st *= 2.;
         amplitude *= .5;
     }
     return value;
 }
+
 
 // Expects -1<x<1
 vec3 marble_color (float x)
@@ -134,8 +132,8 @@ vec3 marble_color (float x)
 
 void main()
 {
-      float amplitude = 10.0;
-      const int roughness = 6;     // noisiness of veins (#octaves in turbulence)
+      float amplitude = 7.0;
+      const int roughness = 5;     // noisiness of veins (#octaves in turbulence)
 
 	float n = amplitude * turbulence (Position.xyz, roughness);
 	float stripe1 = sin(hilight1.w + Position.x * hilight1.x + Position.y * hilight1.y + Position.z * hilight1.z + n);

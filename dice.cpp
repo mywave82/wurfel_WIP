@@ -142,7 +142,7 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 	D glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	D glUseProgram (shaderProgram);
-	
+
 	D glEnableVertexAttribArray (attrib_position);
 	D glVertexAttribPointer (
 		attrib_position,
@@ -234,7 +234,7 @@ void wurfel_dice::render (bool mirror, float const *proj, float const *view, flo
 		D glUniform4fv (uniform_hilight1,   1, hilight1);
 		D glUniform4fv (uniform_hilight2,   1, hilight2);
 		D glUniform4fv (uniform_hilight3,   1, hilight3);
-	}		
+	}
 
 	if (mirror == true)
 	{
